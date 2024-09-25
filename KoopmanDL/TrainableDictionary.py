@@ -13,7 +13,7 @@ class TrainableDictionary(Dictionary):
     self._func.train()
     for data, labels in data_loader:
       self.__optimizer.zero_grad()
-      loss = loss_func(self._func(data), labels)
+      loss = loss_func(self._func(data), self._func(labels))
       loss.backward()
       self.__optimizer.step()
 

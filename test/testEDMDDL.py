@@ -14,5 +14,4 @@ opt = torch.optim.Adam(net.parameters())
 dic = kd.TrainableDictionary(M, net, opt)
 solver = kd.EDMDDLSolver(dic, 0.1)
 result = solver.solve(data_x, data_y)
-print(result)
 
