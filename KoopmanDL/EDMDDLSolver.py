@@ -26,10 +26,13 @@ class EDMDDLSolver(EDMDSolver):
     self.__regularization_factor = regularization_factor
   
   def compute_K(self, data_x, data_y):
-    G = self._dictionary.compute_G(data_x)
-    A = self._dictionary.compute_A(data_x, data_y)
+    PX = self._dictionary.compute_Psi(data_x)
+    PY = self._dictionary.compute_Psi(data_y)
+    N = data_x.shape[0]
+    A = PY @ PX.t() / N
+    G = PX @ PX.t() / N
     regularizer = torch.eye(self._dictionary._M) * self.__regularization_factor
-    K = torch.linalg.pinv(G + regularizer) @ A
+    K = A @ torch.linalg.pinv(G + regularizer) 
     return K
   
   def solve(self, data_x, data_y, tolerance = 1e-10, num_epochs = 100, batch_size = 100):
