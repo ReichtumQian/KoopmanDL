@@ -1,9 +1,8 @@
 
-from .Dictionary import Dictionary
-from .TrainableDictionary import TrainableDictionary
-from .EDMDSolver import EDMDSolver
-from .EDMDDLSolver import EDMDDLSolver
-from .TanhFullNet import TanhFullNet
+from .DataSet import DataSet
+from .Dictionary import Dictionary, TrainableDictionary
+from .EDMDSolver import EDMDSolver, EDMDDLSolver
+from .Net import TanhFullNet
 
 
 

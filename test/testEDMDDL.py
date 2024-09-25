@@ -9,7 +9,7 @@ data_y = torch.tensor(
   [[2], [3], [4], [5], [6]], dtype=torch.float
 )
 M = 1
-net = kd.TanhFullNet(1, 1, [10, 10])
+net = kd.Net(1, 1, [10, 10])
 opt = torch.optim.Adam(net.parameters())
 dic = kd.TrainableDictionary(M, net, opt)
 solver = kd.EDMDDLSolver(dic, 0.1)
