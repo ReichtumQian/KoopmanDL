@@ -22,6 +22,15 @@ class FlowMap(object):
       result = torch.cat([result, x], dim = 0)
     return result
   
+  def generate_next_data(self, ode, x, traj_t_step):
+    n_step = int(traj_t_step / self._dt)
+    result = x
+    for __ in range(n_step):
+      result = self.step(ode, result)
+    return result
+
+    
+  
     
 
 class ForwardEuler(FlowMap):

@@ -25,7 +25,7 @@ class TanhNetWithNonTrainable(TanhNet):
 
   def forward(self, x):
     net_output = super().forward(x)
-    if x.dim() is 1:
+    if x.dim() == 1:
       result = torch.cat([torch.ones(1), x, net_output], dim=0)
     else:
       result = torch.cat([torch.ones(x.size(0), 1), x, net_output], dim=1)
