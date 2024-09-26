@@ -41,6 +41,11 @@ class EDMDDLSolver(EDMDSolver):
       K = self.compute_K(data_x, data_y)
       outputs = self._dictionary.get_func()(data_x)
       labels = self._dictionary.get_func()(data_y)
+      # Compute K Psix
+      outputs_unsqueezed = outputs.unsqueeze(2)
+      K_expanded = K.unsqueeze(0).expand(outputs.size(0), -1, -1)
+      outputs = torch.bmm(K_expanded, outputs_unsqueezed).squeeze(2)
+
       loss = loss_func(outputs, labels)
       self._dictionary.train(data_loader, loss_func)
       print('epoch: {}, loss: {}'.format(epoch, loss))
