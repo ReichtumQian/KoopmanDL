@@ -20,7 +20,6 @@ class EDMDSolver(object):
 class EDMDDLSolver(EDMDSolver):
   
   def __init__(self, dictionary, regularization_factor):
-    # assert(isinstance(dictionary, TrainableDictionary))
     super().__init__(dictionary)
     self.__regularization_factor = regularization_factor
   

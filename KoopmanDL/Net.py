@@ -1,7 +1,7 @@
 import torch
 
 
-class TanhFullNet(torch.nn.Module):
+class TanhNet(torch.nn.Module):
 
   def __init__(self, n_input, n_output, hidden_layer_sizes):
     super().__init__()
@@ -16,3 +16,17 @@ class TanhFullNet(torch.nn.Module):
 
   def forward(self, x):
     return self.__network(x)
+
+
+class TanhNetWithNonTrainable(TanhNet):
+
+  def __init__(self, n_input, n_output, hidden_layer_sizes, n_nontrainable):
+    super().__init__(n_input, n_output - n_nontrainable, hidden_layer_sizes)
+
+  def forward(self, x):
+    net_output = super().forward(x)
+    if x.dim() is 1:
+      result = torch.cat([torch.ones(1), x, net_output], dim=0)
+    else:
+      result = torch.cat([torch.ones(x.size(0), 1), x, net_output], dim=1)
+    return result
