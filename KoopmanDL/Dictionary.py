@@ -27,10 +27,11 @@ class TrainableDictionary(Dictionary):
     Dictionary.__init__(self, M, func)
     self.__optimizer = optimizer
     
-  def train(self, data_loader, loss_func):
-    self._func.train()
-    for data, labels in data_loader:
-      self.__optimizer.zero_grad()
-      loss = loss_func(self._func(data), self._func(labels))
-      loss.backward()
-      self.__optimizer.step()
+  def train(self, data_loader, loss_func, n_epochs = 2):
+    for _ in range(n_epochs):
+      self._func.train()
+      for data, labels in data_loader:
+        self.__optimizer.zero_grad()
+        loss = loss_func(self._func(data), self._func(labels))
+        loss.backward()
+        self.__optimizer.step()
