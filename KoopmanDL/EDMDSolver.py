@@ -1,4 +1,5 @@
 import torch
+from .DataSet import DataSet
 
 class EDMDSolver(object):
 
