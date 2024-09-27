@@ -52,9 +52,4 @@ class EDMDDLSolver(EDMDSolver):
     for epoch in range(n_epochs):
       K = self.compute_K(data_x, data_y)
       self._dictionary.get_func().set_output_layer(K)
-      outputs = self._dictionary(data_x)
-      labels = self._dictionary.get_func().compute_labels(data_y)
-
-      loss = loss_func(outputs, labels)
       self._dictionary.train(data_loader, loss_func)
-      print('epoch: {}, loss: {}'.format(epoch, loss))

@@ -2,9 +2,16 @@ import torch
 import KoopmanDL as kd
 
 
-func = lambda x: torch.tensor(
-  [1, x[0], x[0]**2], dtype=torch.float
-)
+def func(x):
+  N = x.size(0)
+  M = 3
+  result = torch.zeros(N, M)
+  for i in range(N):
+    result[i] = torch.tensor(
+      [1, x[i], x[i]**2]
+    )
+  return result
+    
 data_x = torch.tensor(
   [[1], [2], [3]], dtype=torch.float
 )
