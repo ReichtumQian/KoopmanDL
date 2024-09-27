@@ -4,5 +4,6 @@ torchaudio
 matplotlib
 numpy
 scipy
+tqdm
 
 

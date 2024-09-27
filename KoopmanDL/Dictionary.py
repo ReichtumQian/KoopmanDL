@@ -31,7 +31,7 @@ class TrainableDictionary(Dictionary):
         loss = loss_func(self(data), self._func.compute_labels(labels))
         loss.backward()
         self.__optimizer.step()
-        print('loss: {}'.format(loss))
+    return loss
 
 class RBFDictionary(Dictionary):
 

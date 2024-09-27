@@ -1,6 +1,7 @@
 import torch
 from .DataSet import DataSet
 import numpy as np
+from tqdm import tqdm
 
 class EDMDSolver(object):
 
@@ -31,9 +32,9 @@ class EDMDSolver(object):
 
 class EDMDDLSolver(EDMDSolver):
   
-  def __init__(self, dictionary, regularization_factor):
+  def __init__(self, dictionary, regularizer):
     super().__init__(dictionary)
-    self.__regularization_factor = regularization_factor
+    self.__regularizer = regularizer
   
   def compute_K(self, data_x, data_y):
     PX = self._dictionary(data_x).t()
@@ -41,7 +42,7 @@ class EDMDDLSolver(EDMDSolver):
     N = data_x.size(0)
     A = PY @ PX.t() / N
     G = PX @ PX.t() / N
-    regularizer = torch.eye(self._dictionary._M) * self.__regularization_factor
+    regularizer = torch.eye(self._dictionary._M) * self.__regularizer
     K = A @ torch.linalg.pinv(G + regularizer) 
     return K
   
@@ -49,7 +50,10 @@ class EDMDDLSolver(EDMDSolver):
     data_set = DataSet(data_x, data_y)
     data_loader = torch.utils.data.DataLoader(data_set, batch_size=batch_size, shuffle=True)
     loss_func = torch.nn.MSELoss()
-    for epoch in range(n_epochs):
-      K = self.compute_K(data_x, data_y)
-      self._dictionary.get_func().set_output_layer(K)
-      self._dictionary.train(data_loader, loss_func)
+    with tqdm(range(n_epochs), desc="Training") as pbar:
+      for epoch in pbar:
+        K = self.compute_K(data_x, data_y)
+        self._dictionary.get_func().set_output_layer(K)
+        loss = self._dictionary.train(data_loader, loss_func)
+        loss_str = f"{loss[0]:.2e}"
+        pbar.set_postfix(loss=loss_str)
