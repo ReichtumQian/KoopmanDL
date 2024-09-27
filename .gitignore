@@ -1,2 +1,4 @@
 .vscode/
 *.pyc
+doc/document.pdf
+*.el

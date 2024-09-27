@@ -1,4 +1,7 @@
+import scipy.cluster
 import torch
+import scipy
+import numpy as np
 
 
 class Dictionary(object):
@@ -10,14 +13,17 @@ class Dictionary(object):
   def compute_Psi(self, data_x):
     N = data_x.size(dim = 0)
     M = self._M
-    psi = torch.zeros([M, N])
-    for i in range(N):
-      psi[:, i] = self._func(data_x[i])
+    psi = torch.zeros([N, M])
+    psi = self._func(data_x)
+    psi = psi.t()
+    # for i in range(N):
+    #   psi[:, i] = self._func(data_x[i])
     return psi
   def get_func(self):
     return self._func
-
-
+  
+  def __call__(self, x):
+    return self._func(x)
 
 
 class TrainableDictionary(Dictionary):
@@ -35,3 +41,29 @@ class TrainableDictionary(Dictionary):
         loss = loss_func(self._func(data), self._func(labels))
         loss.backward()
         self.__optimizer.step()
+
+class RBFDictionary(Dictionary):
+
+  def __init__(self, M = 100, regularization_factor = 1e-4):
+    super().__init__(M, None)
+    self.__regularization_factor = regularization_factor
+  
+  def build(self, data):
+    self.__centers = scipy.cluster.vq.kmeans(data, self._M)[0]
+    def func(x):
+      rbfs = []
+      for n in range(self._M):
+        r = scipy.spatial.distance.cdist(x, np.matrix(self.__centers[n, :]))
+        rbf = scipy.special.xlogy(r**2, r + self.__regularization_factor)
+        rbfs.append(rbf)
+      
+      rbfs = np.array(rbfs).squeeze()
+      rbfs = torch.tensor(rbfs, dtype=torch.float64)
+      rbfs = rbfs.transpose(0, 1).reshape(x.shape[0], -1)
+      
+      ones = torch.ones((rbfs.shape[0], 1), dtype=torch.float64)
+      results = torch.cat([ones, x, rbfs], dim=1)
+      return results
+  
+    self._func = func
+  

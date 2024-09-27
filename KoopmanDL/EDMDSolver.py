@@ -1,5 +1,6 @@
 import torch
 from .DataSet import DataSet
+import numpy as np
 
 class EDMDSolver(object):
 
@@ -15,6 +16,18 @@ class EDMDSolver(object):
     G = PX @ PX.t() / N
     K = A @ torch.linalg.pinv(G)
     return K
+  
+  def eig_decomp(self, K):
+    self.eigenvalues, self.eigenvectors = np.linalg.eig(K.detach().numpy())
+    idx = self.eigenvalues.real.argsort()[::-1]
+    self.eigenvalues = self.eigenvalues[idx]
+    self.eigenvectors = self.eigenvectors[:, idx]
+    self.eigenvectors_inv = np.linalg.inv(self.eigenvectors)
+
+  def eigenfunctions(self, data_x):
+    psi_x = self._dictionary(data_x)
+    val = np.matmul(psi_x, self.eigenvectors)
+    return val
 
 
 class EDMDDLSolver(EDMDSolver):

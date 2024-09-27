@@ -1,0 +1,107 @@
+
+\documentclass[en, bibend=bibtex]{elegantpaper}
+
+\title{KoopmanDL Documentation}
+\author{Yixiao Qian}
+\institute{Zhejiang University}
+\date{\today}
+\setcounter{tocdepth}{3}
+% \everymath{\displaystyle}
+\usepackage{esint}
+\theoremstyle{plain}
+\usepackage{miniplot}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\renewcommand{\proofname}{\textsl {Proof}}
+
+\usepackage{bm}
+\makeatletter
+\def\renewtheorem#1{%
+  \expandafter\let\csname#1\endcsname\relax
+  \expandafter\let\csname c@#1\endcsname\relax
+  \gdef\renewtheorem@envname{#1}
+  \renewtheorem@secpar
+}
+\def\renewtheorem@secpar{\@ifnextchar[{\renewtheorem@numberedlike}{\renewtheorem@nonumberedlike}}
+\def\renewtheorem@numberedlike[#1]#2{\newtheorem{\renewtheorem@envname}[#1]{#2}}
+\def\renewtheorem@nonumberedlike#1{
+  \def\renewtheorem@caption{#1}
+  \edef\renewtheorem@nowithin{\noexpand\newtheorem{\renewtheorem@envname}{\renewtheorem@caption}}
+  \renewtheorem@thirdpar
+}
+\def\renewtheorem@thirdpar{\@ifnextchar[{\renewtheorem@within}{\renewtheorem@nowithin}}
+\def\renewtheorem@within[#1]{\renewtheorem@nowithin[#1]}
+\makeatother
+
+\begin{document}
+\maketitle
+
+\section{Dictionary}
+
+\subsection{RBFDictionary}
+
+\begin{definition}
+  Let $(V, \|\cdot\|)$ be a normed linear space,
+  a function $\varphi: V \rightarrow \mathbb{R}$ is called
+  a \emph{radial basis function (RBF)} if
+  there exists a univariate function $\hat{\varphi}: [0, +\infty) \rightarrow \mathbb{R}$
+  such that for all $\mathbf{x} \in V$
+  \begin{equation*}
+   \varphi(\mathbf{x}) = \hat{\varphi}(\|\mathbf{x} - \mathbf{c}\|),
+  \end{equation*}
+  for some center point $\mathbf{c} \in V$.
+\end{definition}
+
+Assume we want to build a RBF Dictionary
+with $M$ RBF centers and a regularizer $\lambda \in \mathbb{R}$.
+Given a dataset $X \in \mathbb{R}^{N \times D}$,
+where $N$ is the number of samples and
+$D$ is the number of features,
+we first apply k-means clustering to find $M$ centers:
+\begin{equation*}
+  \{\mu_1, \mu_2, \cdots, \mu_M\} \subset \mathbb{R}^D.
+\end{equation*}
+For each data point $\mathbf{x}_i \in X$,
+the distance between $\mathbf{x}_i$ and $\mu_j$ is
+$r_{ij} = \|\mathbf{x}_i - \mu_j\|$,
+then the RBF value is computed as
+\begin{equation*}
+  \phi_{ij} = (r_{ij})^2 \log(r_{ij} + \lambda),
+\end{equation*}
+where $\phi_{ij}$ is the RBF value for the
+$i$-th data point and the $j$-th center.
+Collecting all the RBF values yields a matrix $\Phi \in \mathbb{R}^{N \times M}$
+\begin{equation*}
+  \Phi = \left[
+    \begin{array}{cccc}
+      \phi_{11}&\phi_{12}&\cdots&\phi_{1M}\\
+      \phi_{21}&\phi_{22}&\cdots&\phi_{2M}\\
+      \vdots & \vdots & \ddots & \vdots\\
+      \phi_{N1}&\phi_{N2}&\cdots&\phi_{NM}
+    \end{array}
+  \right].
+\end{equation*}
+To keep the same as Trainable Dictionary,
+we add one column of all-one vector and
+the projection part
+\begin{equation*}
+  \text{output} = \left[
+    \begin{array}{ccc}
+      \mathbf{1}&X&\Phi
+    \end{array}
+  \right],
+\end{equation*}
+where $\mathbf{1} \in \mathbb{R}^{N\times 1}$ is a vector with all elements
+equal to one.
+
+
+
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+
