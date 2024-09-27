@@ -23,17 +23,17 @@ class TanhNetWithNonTrainable(TanhNet):
 
   def __init__(self, n_input, n_output, hidden_layer_sizes, n_nontrainable):
     super().__init__(n_input, n_output - n_nontrainable, hidden_layer_sizes)
-    self.__output_layer = torch.nn.Linear(n_output, n_output, bias=False)
-    self.__output_layer.requires_grad = False
+  #  self.__output_layer = torch.nn.Linear(n_output, n_output, bias=False)
+  #  self.__output_layer.requires_grad = False
 
   def forward(self, x):
     net_output = super().forward(x)
-    if x.dim() == 1:
-      result = torch.cat([torch.ones(1), x, net_output], dim=0)
-    else:
-      result = torch.cat([torch.ones(x.size(0), 1), x, net_output], dim=1)
-    return self.__output_layer(result)
-
-  def set_output_layer(self, weight):
-    with torch.no_grad():
-      self.__output_layer.weight.copy_(weight)
+    #if x.dim() == 1:
+    #  result = torch.cat([torch.ones(1), x, net_output], dim=0)
+    #else:
+    result = torch.cat([torch.ones(x.size(0), 1), x.detach(), net_output], dim=1)
+    #return self.__output_layer(result)
+    return result
+  #def set_output_layer(self, weight):
+  #  with torch.no_grad():
+  #    self.__output_layer.weight.copy_(weight)
