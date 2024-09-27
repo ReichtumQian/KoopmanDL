@@ -36,13 +36,15 @@ class EDMDDLSolver(EDMDSolver):
     super().__init__(dictionary)
     self.__regularizer = regularizer
   
-  def compute_K(self, data_x, data_y):
+  def compute_K(self, data_x, data_y, reg = None):
     PX = self._dictionary(data_x).t()
     PY = self._dictionary(data_y).t()
     N = data_x.size(0)
-    A = PY @ PX.t() / N
-    G = PX @ PX.t() / N
-    regularizer = torch.eye(self._dictionary._M) * self.__regularizer
+    A = PY @ PX.t()
+    G = PX @ PX.t()
+    if reg is None:
+      reg = self.__regularizer
+    regularizer = torch.eye(self._dictionary._M) * reg
     K = A @ torch.linalg.pinv(G + regularizer) 
     return K
   
@@ -55,5 +57,5 @@ class EDMDDLSolver(EDMDSolver):
         K = self.compute_K(data_x, data_y)
         self._dictionary.get_func().set_output_layer(K)
         loss = self._dictionary.train(data_loader, loss_func)
-        loss_str = f"{loss[0]:.2e}"
+        loss_str = f"{loss.item():.2e}"
         pbar.set_postfix(loss=loss_str)

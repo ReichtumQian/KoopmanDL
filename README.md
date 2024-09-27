@@ -1,6 +1,10 @@
 
 Implementation of EDMDDL from [1]
 
+## Authors
+
+- Yixiao Qian, Zhejiang University <yixiaoqian@zju.edu.com>
+- Weizhen Li, Zhejiang University
 
 ## References
 
