@@ -341,11 +341,13 @@ equal to one.
   and a non-trainable layer.
 \item Attributes:
   \begin{itemize}
-  \item \lstinline|__output_layer|: the non-trainable layer.
+  \item \lstinline|__nontrainable_layer|: the non-trainable layer.
   \end{itemize}
 \item Methods:
   \begin{itemize}
   \item \lstinline|__init__(self, input_dim, output_dim, hidden_layer_sizes, n_nontrainable)|
+
+    \lstinline|n_nontrainable| is the number of non-trainable outputs.
   \item \lstinline|forward(self, x)|
   \item \lstinline|set_output_layer(self, weight)|
   \end{itemize}
