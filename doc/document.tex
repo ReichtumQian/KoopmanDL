@@ -37,6 +37,140 @@
 \begin{document}
 \maketitle
 
+\section{Preliminary}
+
+\subsection{Koopman Operator}
+
+Consider a measure space $(\mathcal{M}, \mathcal{F}, \rho)$,
+on which we define a dynamical system
+\begin{equation*}
+  x(n+1) = f(x(n)), \quad x(n) \in \mathcal{M}, \quad n \geq 0.
+\end{equation*}
+
+\begin{definition}
+  Consider the Hilbert space
+  \begin{equation*}
+  L^2(\mathcal{M}, \rho) = \left\{ \psi: \mathcal{M} \rightarrow \mathbb{C}:
+    \|\psi\|_{L^2(\mathcal{M},\rho)} < \infty \right\},
+  \end{equation*}
+  for all $\psi \in L^2(\mathcal{M}, \rho)$, it is called an \emph{observable}.
+\end{definition}
+
+\begin{definition}
+  For any observable $\psi \in L^2(\mathcal{M}, \rho)$,
+  the \emph{Koopman operator} maps it to another observable
+  \begin{equation*}
+    \mathcal{K} \psi = \psi \circ f.
+  \end{equation*}
+\end{definition}
+
+\subsection{The EDMD Algorithm}
+
+The EDMD algorithm aims to find a finite-dimensional
+representation of the Koopman operator $\mathcal{K}$.
+Picking a dictionary $D = \{\psi_1,\psi_2,\cdots,\psi_M\}$,
+where
+\begin{equation*}
+  \psi_i: \mathcal{M} \rightarrow \mathbb{R},
+  \quad \text{for} \quad i = 1,2,\cdots, M,
+\end{equation*}
+we consider the span $U(D) = \text{span}\{\psi_1,\cdots,\psi_M\} = \{a^T\Psi:a \in \mathbb{C}^M\}$,
+where $\Psi = [\psi_1,\psi_2,\cdots,\psi_M]^T$.
+Assume that for all $\psi \in U(D)$,
+$\mathcal{K} \psi \in U(D)$,
+then $\mathcal{K}$ is a linear transformation in the space $U(D)$,
+which means $\mathcal{K}$ can be represented
+by a matrix $K \in \mathbb{R}^{M \times M}$:
+\begin{equation*}
+  K \left[
+    \begin{array}{c}
+      \psi_1\\
+      \psi_2\\
+      \vdots\\
+      \psi_M
+    \end{array}
+  \right] = \left[
+    \begin{array}{c}
+      \psi_1 \circ f\\
+      \psi_2 \circ f\\
+      \vdots\\
+      \psi_M \circ f
+    \end{array}
+  \right].
+\end{equation*}
+However, since the nonlinear properties of $f$,
+the Koopman operator $\mathcal{K}$ is not always equivalent to the matrix $K$.
+But in that case, we can still consider $K$ as a finite-dimensional
+approximation of $\mathcal{K}$.
+
+
+From the view of data science,
+given a set of data points $\{(x(n), y(n))\}_{n = 1}^N$
+with $y(n) = f(x(n))$,
+we can find $K$ by solving an optimization problem
+\begin{equation}
+  \label{eq:EDMD-problem}
+  K = \text{argmin}_{\tilde{K} \in \mathbb{R}^{M \times M}} J(\tilde{K})
+  = \sum\limits_{n = 1}^N \|\Psi(y(n)) - \tilde{K} \Psi(x(n))\|_2^2,
+\end{equation}
+where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
+
+\begin{proposition}
+  The solution of (\ref{eq:EDMD-problem}) is
+  \begin{equation*}
+    K = AG^+,
+  \end{equation*}
+  where
+  \begin{equation*}
+    G = \frac{1}{N} \sum\limits_{n = 1}^N \Psi(x(n)) \Psi(x(n))^T,
+    \quad A = \frac{1}{N} \sum\limits_{n = 1}^N \Psi(x(n)) \Psi(y(n))^T.
+  \end{equation*}
+\end{proposition}
+
+\begin{proof}
+  Denote $X = [\Psi(x(1)),\cdots,\Psi(x(N))], Y =
+  [\Psi(y(1)),\cdots,\Psi(y(N))]$,
+  then (\ref{eq:EDMD-problem}) is equivalent to
+  \begin{equation*}
+    K = \text{argmin}_{\tilde{K} \in \mathbb{R}^{M \times M}} J(\tilde{K})
+    = \|Y - \tilde{K}X\|_F^2,
+  \end{equation*}
+  where $\|\cdot\|_F$ is Frobenius norm.
+  To minimize $J(\tilde{K})$, we take its derivative with respect to $\tilde{K}$,
+  \begin{equation*}
+    \frac{\partial J(\tilde{K})}{\partial \tilde{K}}
+    = - 2(Y - \tilde{K}X)X^T,
+  \end{equation*}
+  and let the derivative to be zero, i.e.,
+  $2(Y-\tilde{K}X)X^T = 0$,
+  which yields
+  \begin{equation*}
+    YX^T = \tilde{K}XX^T.
+  \end{equation*}
+  By taking the pseudo inverse of $XX^T$,
+  we obtain
+  \begin{equation*}
+    K = (YX^T)(XX^T)^+.
+  \end{equation*}
+
+  Now we show that $(YX^T)(XX^T)^+ = AG^+$,
+  by the definition of matrix multiplication
+  \begin{equation*}
+    G(i,j) = \frac{1}{N} \sum\limits_{n = 1}^N \psi_i(x(n))\psi_j(x(n)), \quad
+    (XX^T)(i,j) = \sum\limits_{n = 1}^N X(i,n)X(j,n) = \sum\limits_{n = 1}^N \psi_i(x(n))\psi_j(x(n)),
+  \end{equation*}
+  i.e., $XX^T = N \cdot G$.
+  The same reasoning yields $YX^T = N \cdot A$.
+  By the properties of pseudo inverse,
+  we have
+  \begin{equation*}
+    K = AG^+ = (YX^T)(XX^T)^+. \qedhere
+  \end{equation*}
+\end{proof}
+
+\subsection{The EDMD-DL Algorithm}
+
+
 \section{Dictionary}
 
 \subsection{RBFDictionary}
