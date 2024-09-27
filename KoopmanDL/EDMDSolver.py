@@ -8,9 +8,8 @@ class EDMDSolver(object):
     self._dictionary = dictionary
 
   def compute_K(self, data_x, data_y):
-    PX = self._dictionary.compute_Psi(data_x)
-    PY = self._dictionary.compute_Psi(data_y)
-    # K = PY @ torch.linalg.pinv(PX)
+    PX = self._dictionary(data_x).t()
+    PY = self._dictionary(data_y).t()
     N = data_x.shape[0]
     A = PY @ PX.t() / N
     G = PX @ PX.t() / N
@@ -37,8 +36,8 @@ class EDMDDLSolver(EDMDSolver):
     self.__regularization_factor = regularization_factor
   
   def compute_K(self, data_x, data_y):
-    PX = self._dictionary.compute_Psi(data_x)
-    PY = self._dictionary.compute_Psi(data_y)
+    PX = self._dictionary(data_x).t()
+    PY = self._dictionary(data_y).t()
     N = data_x.size(0)
     A = PY @ PX.t() / N
     G = PX @ PX.t() / N
