@@ -2,6 +2,7 @@ import scipy.cluster
 import torch
 import scipy
 import numpy as np
+from .Device import DEVICE
 
 
 class Dictionary(object):
@@ -27,6 +28,8 @@ class TrainableDictionary(Dictionary):
     for _ in range(n_epochs):
       self._func.train()
       for data, labels in data_loader:
+        data = data.to(DEVICE)
+        labels = labels.to(DEVICE)
         self.__optimizer.zero_grad()
         K = K.detach()
         X = self(data) @ K

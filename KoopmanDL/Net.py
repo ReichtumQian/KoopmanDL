@@ -46,8 +46,9 @@ class TanhResNetWithNonTrainable(TanhResNet):
     super().__init__(n_input, n_output - n_nontrainable, hidden_layer_sizes)
 
   def forward(self, x):
+    device = x.device
     net_output = super().forward(x)
-    result = torch.cat([torch.ones(x.size(0), 1),
+    result = torch.cat([torch.ones(x.size(0), 1).to(device),
                         x.detach(), net_output],
                        dim=1)
     return result

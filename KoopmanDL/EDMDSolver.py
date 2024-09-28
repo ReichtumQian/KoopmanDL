@@ -2,6 +2,7 @@ import torch
 from .DataSet import DataSet
 import numpy as np
 from tqdm import tqdm
+from .Device import DEVICE
 
 class EDMDSolver(object):
 
@@ -36,6 +37,7 @@ class EDMDDLSolver(EDMDSolver):
     self.__regularizer = regularizer
   
   def compute_K(self, data_x, data_y, reg = None):
+    device = data_x.device
     PX = self._dictionary(data_x).t()
     PY = self._dictionary(data_y).t()
     A = PY @ PX.t()
@@ -43,6 +45,7 @@ class EDMDDLSolver(EDMDSolver):
     if reg is None:
       reg = self.__regularizer
     regularizer = torch.eye(self._dictionary._M) * reg
+    regularizer = regularizer.to(device)
     K =  A @ torch.linalg.pinv(G + regularizer)
     return K.t()
   
@@ -50,6 +53,9 @@ class EDMDDLSolver(EDMDSolver):
     data_set = DataSet(data_x, data_y)
     data_loader = torch.utils.data.DataLoader(data_set, batch_size=batch_size, shuffle=True)
     loss_func = torch.nn.MSELoss()
+    data_x = data_x.to(DEVICE)
+    data_y = data_y.to(DEVICE)
+    self._dictionary.get_func().to(DEVICE)
     with tqdm(range(n_epochs), desc="Training") as pbar:
       for epoch in pbar:
         K = self.compute_K(data_x, data_y)
