@@ -23,12 +23,15 @@ class TrainableDictionary(Dictionary):
     Dictionary.__init__(self, M, func)
     self.__optimizer = optimizer
     
-  def train(self, data_loader, loss_func, n_epochs = 2):
+  def train(self, data_loader, K, loss_func, n_epochs = 2):
     for _ in range(n_epochs):
       self._func.train()
       for data, labels in data_loader:
         self.__optimizer.zero_grad()
-        loss = loss_func(self(data), self._func.compute_labels(labels))
+        K = K.detach()
+        X = self(data) @ K
+        Y = self(labels)
+        loss = loss_func(X, Y)
         loss.backward()
         self.__optimizer.step()
     return loss

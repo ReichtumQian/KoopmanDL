@@ -44,20 +44,10 @@ class TanhResNetWithNonTrainable(TanhResNet):
 
   def __init__(self, n_input, n_output, hidden_layer_sizes, n_nontrainable):
     super().__init__(n_input, n_output - n_nontrainable, hidden_layer_sizes)
-    self.__nontrainable_layer = torch.nn.Linear(n_output, n_output, bias=False)
-    self.__nontrainable_layer.requires_grad = False
 
   def forward(self, x):
-    result = self.compute_labels(x)
-    return self.__nontrainable_layer(result)
-
-  def compute_labels(self, y):
-    net_output = super().forward(y)
-    result = torch.cat([torch.ones(y.size(0), 1),
-                        y.detach(), net_output],
+    net_output = super().forward(x)
+    result = torch.cat([torch.ones(x.size(0), 1),
+                        x.detach(), net_output],
                        dim=1)
     return result
-
-  def set_output_layer(self, weight):
-    with torch.no_grad():
-      self.__nontrainable_layer.weight.copy_(weight)

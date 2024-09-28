@@ -53,7 +53,6 @@ class EDMDDLSolver(EDMDSolver):
     with tqdm(range(n_epochs), desc="Training") as pbar:
       for epoch in pbar:
         K = self.compute_K(data_x, data_y)
-        self._dictionary.get_func().set_output_layer(K)
-        loss = self._dictionary.train(data_loader, loss_func)
+        loss = self._dictionary.train(data_loader, K, loss_func)
         loss_str = f"{loss.item():.2e}"
         pbar.set_postfix(loss=loss_str)
