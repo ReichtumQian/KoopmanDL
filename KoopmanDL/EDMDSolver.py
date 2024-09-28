@@ -11,11 +11,10 @@ class EDMDSolver(object):
   def compute_K(self, data_x, data_y):
     PX = self._dictionary(data_x).t()
     PY = self._dictionary(data_y).t()
-    N = data_x.shape[0]
-    A = PY @ PX.t() / N
-    G = PX @ PX.t() / N
-    K = A @ torch.linalg.pinv(G)
-    return K
+    A = PY @ PX.t()
+    G = PX @ PX.t()
+    K =  A @ torch.linalg.pinv(G)
+    return K.t()
   
   def eig_decomp(self, K):
     self.eigenvalues, self.eigenvectors = np.linalg.eig(K.detach().numpy())
@@ -39,14 +38,13 @@ class EDMDDLSolver(EDMDSolver):
   def compute_K(self, data_x, data_y, reg = None):
     PX = self._dictionary(data_x).t()
     PY = self._dictionary(data_y).t()
-    N = data_x.size(0)
     A = PY @ PX.t()
     G = PX @ PX.t()
     if reg is None:
       reg = self.__regularizer
     regularizer = torch.eye(self._dictionary._M) * reg
-    K = A @ torch.linalg.pinv(G + regularizer) 
-    return K
+    K =  A @ torch.linalg.pinv(G + regularizer)
+    return K.t()
   
   def solve(self, data_x, data_y, n_epochs = 100, batch_size = 100):
     data_set = DataSet(data_x, data_y)

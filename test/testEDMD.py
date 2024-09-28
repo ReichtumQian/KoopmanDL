@@ -22,8 +22,10 @@ M = 3
 dic = kd.Dictionary(M, func)
 solver = kd.EDMDSolver(dic)
 K = solver.compute_K(data_x, data_y)
-print(dic(data_x))
-print(dic(data_y))
 print(K)
-
+layer = torch.nn.Linear(M, M, bias=False)
+with torch.no_grad():
+  layer.weight.copy_(K)
+print(K @ torch.tensor([[0], [1],[0]], dtype=torch.float))
+print(layer(torch.tensor([[0,1,0]], dtype=torch.float)))
 

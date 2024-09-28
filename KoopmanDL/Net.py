@@ -1,25 +1,46 @@
 import torch
 
 
-class TanhNet(torch.nn.Module):
+class TanhResBlock(torch.nn.Module):
+
+  def __init__(self, n_input, n_output):
+    super().__init__()
+    self.__linear1 = torch.nn.Linear(n_input, n_output)
+    self.__tanh = torch.nn.Tanh()
+    self.__linear2 = torch.nn.Linear(n_output, n_output)
+
+    if n_input != n_output:
+      self.__shortcut = torch.nn.Linear(n_input, n_output)
+    else:
+      self.__shortcut = torch.nn.Identity()
+
+  def forward(self, x):
+    identity = self.__shortcut(x)
+    out = self.__linear1(x)
+    out = self.__tanh(out)
+    out = self.__linear2(out)
+    out += identity
+    out = self.__tanh(out)
+    return out
+
+
+class TanhResNet(torch.nn.Module):
 
   def __init__(self, n_input, n_output, hidden_layer_sizes):
     super().__init__()
     layers = []
-    for i in range(len(hidden_layer_sizes)):
-      layers.append(
-          torch.nn.Linear(n_input if i == 0 else hidden_layer_sizes[i - 1],
-                          hidden_layer_sizes[i]))
-      layers.append(torch.nn.Tanh())
+    input_size = n_input
+    for hidden_size in hidden_layer_sizes:
+      layers.append(TanhResBlock(input_size, hidden_size))
+      input_size = hidden_size
     layers.append(torch.nn.Linear(hidden_layer_sizes[-1], n_output))
     self.__network = torch.nn.Sequential(*layers)
 
   def forward(self, x):
     return self.__network(x)
-  
 
 
-class TanhNetWithNonTrainable(TanhNet):
+class TanhResNetWithNonTrainable(TanhResNet):
 
   def __init__(self, n_input, n_output, hidden_layer_sizes, n_nontrainable):
     super().__init__(n_input, n_output - n_nontrainable, hidden_layer_sizes)
@@ -29,13 +50,12 @@ class TanhNetWithNonTrainable(TanhNet):
   def forward(self, x):
     result = self.compute_labels(x)
     return self.__nontrainable_layer(result)
-  
+
   def compute_labels(self, y):
     net_output = super().forward(y)
-    if y.dim() == 1:
-      result = torch.cat([torch.ones(1), y, net_output], dim=0)
-    else:
-      result = torch.cat([torch.ones(y.size(0), 1), y, net_output], dim=1)
+    result = torch.cat([torch.ones(y.size(0), 1),
+                        y.detach(), net_output],
+                       dim=1)
     return result
 
   def set_output_layer(self, weight):
