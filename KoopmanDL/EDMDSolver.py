@@ -50,6 +50,7 @@ class EDMDDLSolver(EDMDSolver):
     return K.t()
   
   def solve(self, data_x, data_y, n_epochs = 100, batch_size = 100):
+    device = data_x.device
     data_set = DataSet(data_x, data_y)
     data_loader = torch.utils.data.DataLoader(data_set, batch_size=batch_size, shuffle=True)
     loss_func = torch.nn.MSELoss()
@@ -62,3 +63,6 @@ class EDMDDLSolver(EDMDSolver):
         loss = self._dictionary.train(data_loader, K, loss_func)
         loss_str = f"{loss.item():.2e}"
         pbar.set_postfix(loss=loss_str)
+    data_x = data_x.to(device)
+    data_y = data_y.to(device)
+    self._dictionary.get_func().to(device)
