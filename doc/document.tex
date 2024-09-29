@@ -300,7 +300,7 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
 \end{proposition}
 
 \begin{proof}
-  it can written as
+  $\mathbf{g}(x)$ can be written as
   \begin{equation*}
     \mathbf{g}(x) = \left[
       \begin{array}{c}
@@ -353,7 +353,6 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
       \end{array}
     \right] \Psi(x) = \Xi \Psi(x),
   \end{equation*}
-  here we suppose $\Xi$ is an orthogonal matrix,
   then by Lemma \ref{lem:lemma-of-expression-of-g}
   \begin{equation}
     \label{eq:right-eigenvector}
@@ -370,12 +369,33 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
   we have
   \begin{equation}
     \label{eq:expression-of-g}
-    \mathbf{g}(x) = V \Phi(x) = \sum\limits_{k = 1}^M v_k \varphi_k,
+    \mathbf{g}(x) = V \Phi(x) = \sum\limits_{k = 1}^M v_k \varphi_k(x),
   \end{equation}
   where $V = [v_1,\cdots,v_M] = B\overline{W} $.
 \end{proof}
 
-
+In actual implementation,
+we add fixed functions
+$[\mathbf{1}, \mathbf{x}]$ into the dictionary,
+which implies
+\begin{equation*}
+g_i(x) = \mathbf{b}_i^T \Psi(x) = e_{i+1}^T \Psi(x),
+\end{equation*}
+where $e_i \in \mathbb{R}^M$ have an $i$th element being $1$
+and $0$ otherwise.
+Thus the matrix $B$ can be simply computed as
+\begin{equation*}
+  B = [e_2, e_3, \cdots, e_{d+1}]^T.
+\end{equation*}
+With $B, W$ computed, $\mathbf{g}(x)$ can be derived in the form
+\begin{equation*}
+  \mathbf{g}(x) = \sum\limits_{k = 1}^M v_k\varphi_k(x).
+\end{equation*}
+Combined with (\ref{eq:koopman-mode-decomposition}) we obtain
+\begin{equation*}
+  x(n) = \sum\limits_{k = 1}^M v_k \mu_k^n \varphi_k(x(0)),
+\end{equation*}
+which means we can predict the whole trajectory.
 
 \subsection{The EDMD-DL Algorithm}
 
