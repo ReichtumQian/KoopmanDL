@@ -41,9 +41,9 @@ class TrainableDictionary(Dictionary):
 
 class RBFDictionary(Dictionary):
 
-  def __init__(self, M = 100, regularization_factor = 1e-4):
+  def __init__(self, M = 100, regularizer = 1e-4):
     super().__init__(M, None)
-    self.__regularization_factor = regularization_factor
+    self.__regularizer = regularizer
   
   def build(self, data):
     self.__centers = scipy.cluster.vq.kmeans(data, self._M)[0]
@@ -51,7 +51,7 @@ class RBFDictionary(Dictionary):
       rbfs = []
       for n in range(self._M):
         r = scipy.spatial.distance.cdist(x, np.matrix(self.__centers[n, :]))
-        rbf = scipy.special.xlogy(r**2, r + self.__regularization_factor)
+        rbf = scipy.special.xlogy(r**2, r + self.__regularizer)
         rbfs.append(rbf)
       
       rbfs = np.array(rbfs).squeeze()
