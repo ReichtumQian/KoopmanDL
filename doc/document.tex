@@ -292,7 +292,7 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
 \begin{proposition}
   Consider the full-time observable $\mathbf{g}(x) = x$,
   assume that for all $g_i(x) \in L^2(\mathcal{M}, \rho)$,
-  then there exists $V \in \mathbb{C}^{M \times M}$ such that
+  then there exists $V \in \mathbb{C}^{d \times M}$ such that
   \begin{equation*}
     \mathbf{g}(x) = V \Phi(x),
   \end{equation*}
@@ -326,12 +326,12 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
     \label{eq:expression-of-full-time-observable}
     \mathbf{g}(x) = \left[
       \begin{array}{cccc}
-        \mathbf{b}_1^T\Psi(x)&\mathbf{b}_2^T\Psi(x)&\cdots&\mathbf{b}_N^T\Psi(x)
+        \mathbf{b}_1^T\Psi(x)&\mathbf{b}_2^T\Psi(x)&\cdots&\mathbf{b}_d^T\Psi(x)
       \end{array}
     \right]^T
     = B\Psi(x),
   \end{equation}
-  where $B = [\mathbf{b}_1,\cdots,\mathbf{b}_N]^T$.
+  where $B = [\mathbf{b}_1,\cdots,\mathbf{b}_d]^T$.
   Now we are going to express $\psi_i$ in terms of $\varphi_i$,
   define
   \begin{equation*}
@@ -391,11 +391,11 @@ With $B, W$ computed, $\mathbf{g}(x)$ can be derived in the form
 \begin{equation*}
   \mathbf{g}(x) = \sum\limits_{k = 1}^M v_k\varphi_k(x).
 \end{equation*}
-Combined with (\ref{eq:koopman-mode-decomposition}) we obtain
+Combined with (\ref{eq:koopman-mode-decomposition-one-step}) we obtain
 \begin{equation*}
-  x(n) = \sum\limits_{k = 1}^M v_k \mu_k^n \varphi_k(x(0)),
+  x(n) = \sum\limits_{k = 1}^M v_k \mu_k \varphi_k(x(n-1)),
 \end{equation*}
-which means we can predict the whole trajectory.
+which means we can predict the whole trajectory step by step.
 
 \subsection{The EDMD-DL Algorithm}
 
