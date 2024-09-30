@@ -1,18 +1,20 @@
 
 Pytorch implementation of EDMDDL [1].
 
+This is my first project written in Python and PyTorch. If you find anything that can be improved, please let me know.
+
 ## Highlights
 
 - **Programming-Mathematics Mapping**: We carefully designed the classes to ensure a clear one-to-one correspondence between programming constructs and mathematical concepts.
 - **Framework**: The implementation is carried out in `Pytorch`.
 
-## Documentation
+## Documentation (Work in Progress)
 
 Comprehensive mathematics details and design documentation are available in the `doc` folder. To compile the document, make sure your computer has `texlive` installed.
 
 ``` bash
 git clone https://github.com/ReichtumQian/KoopmanDL.git
-cd doc
+cd KoopmanDL/doc
 make
 ```
 
