@@ -29,7 +29,6 @@ class TrainableDictionary(Dictionary):
 
   def train(self, data_loader, K, loss_func, n_epochs = 2):
     for _ in range(n_epochs):
-      self._func.train()
       for data, labels in data_loader:
         data = data.to(DEVICE)
         labels = labels.to(DEVICE)

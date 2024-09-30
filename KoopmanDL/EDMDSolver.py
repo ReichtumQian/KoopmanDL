@@ -52,6 +52,12 @@ class EDMDSolver(object):
       x_next = x_next.real.t()
       traj[i+1] = x_next
     return traj
+  
+  def save(self, path):
+    torch.save(self._dictionary.get_func().state_dict(), path)
+  
+  def load(self, path):
+    self._dictionary.get_func().load_state_dict(torch.load(path))
     
 
 class EDMDDLSolver(EDMDSolver):
@@ -81,9 +87,9 @@ class EDMDDLSolver(EDMDSolver):
     data_x = data_x.to(DEVICE)
     data_y = data_y.to(DEVICE)
     self._dictionary.get_func().to(DEVICE)
-    Loss = []
+    self._dictionary.get_func().train()
     with tqdm(range(n_epochs), desc="Training") as pbar:
-      for epoch in pbar:
+      for _ in pbar:
         K = self.compute_K(data_x, data_y)
         loss = self._dictionary.train(data_loader, K, loss_func)
         loss_str = f"{loss.item():.2e}"
@@ -91,3 +97,4 @@ class EDMDDLSolver(EDMDSolver):
     data_x = data_x.to(device)
     data_y = data_y.to(device)
     self._dictionary.get_func().to(device)
+    self._dictionary.get_func().eval()

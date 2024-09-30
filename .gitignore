@@ -1,4 +1,5 @@
 .vscode/
+model/
 *.pyc
 doc/document.pdf
 *.el
