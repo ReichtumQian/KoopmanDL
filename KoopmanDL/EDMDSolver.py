@@ -30,8 +30,9 @@ class EDMDSolver(object):
     M = self._dictionary.get_M()
     d = x0.size(1)
     assert(d < M)
+    data_type = self.eigenvalues.dtype
     # Compute matrix B
-    B = torch.zeros(d, M, dtype=torch.cfloat)
+    B = torch.zeros(d, M, dtype=data_type)
     for i in range(d):
       B[i, i + 1] = 1
     # Compute \Xi, V
@@ -39,7 +40,7 @@ class EDMDSolver(object):
     V = B @ Xi
     # Compute \Phi
     def Phi(x):
-      Psi = self._dictionary(x).to(torch.cfloat).t()
+      Psi = self._dictionary(x).to(data_type).t()
       phi = self.right_eigenvectors.t() @ Psi
       return phi
       
