@@ -1,0 +1,125 @@
+
+
+\section{Dictionary}
+\subsection{Class Dictionary}
+
+\begin{itemize}
+\item Brief description: A dictionary is vector function
+  $\Psi: \mathbb{R}^d \rightarrow \mathbb{R}^M$.
+  Batch operation is also supported $\Psi: \mathbb{R}^{N \times d} \rightarrow
+  \mathbb{R}^{N \times M}$
+\item Attributes:
+  \begin{itemize}
+  \item \lstinline|_func|: The vector function.
+  \item \lstinline|_M|: The output dimension of the vector function.
+  \end{itemize}
+\item Methods:
+  \begin{itemize}
+  \item \lstinline|__init__(self, M, func)|: initialize the dictionary.
+    Note \lstinline|func| must support batch operation
+  \item \lstinline|__call__(self, x)|: apply the dictionary,
+    the input must satisfy $x \in \mathbb{R}^d$ or $x \in \mathbb{R}^{N \times d}$.
+  \end{itemize}
+\end{itemize}
+
+\subsection{Class TrainableDictionary(Dictionary)}
+
+\begin{itemize}
+\item Brief description: A dictionary that contains a trainable neural network.
+  It is a vector function $\mathbb{R}^d \rightarrow \mathbb{R}^M$,
+  the output contains non-trainable outputs $\mathbf{1}$ and $x$.
+\item Attributes:
+  \begin{itemize}
+  \item \lstinline|__optimizer|: the optimizer of the trainable neural network.
+  \end{itemize}
+\item Methods:
+  \begin{itemize}
+  \item \lstinline|__init__(self, M, func, optimizer)|:
+  Note \lstinline|func| must be an instance of \lstinline|torch.nn.Module|.
+  \item \lstinline|train(self, data_loader, loss_func, n_epochs)|:
+  train the neural network.
+  \end{itemize}
+\end{itemize}
+
+\subsection{Class RBFDictionary(Dictionary)}
+
+\begin{itemize}
+\item Brief description: 
+\end{itemize}
+
+\section{Solver}
+
+\subsection{Class EDMDSolver}
+
+\begin{itemize}
+\item Brief description: Implementation of EDMD algorithm,
+  also acts as the base class of \lstinline|EDMDDLSolver|.
+\item Attributes:
+  \begin{itemize}
+  \item \lstinline|__init__(self, dictionary)|
+  \item \lstinline|compute_K(self, data_x, data_y)|:
+    Apply the formula $K = AG^+$ to compute $K$.
+  \end{itemize}
+\item Methods:
+\end{itemize}
+
+
+
+\subsection{Class EDMDDLSolver(EDMDSolver)}
+
+\begin{itemize}
+\item Brief description: Implementation of EDMD-DL algorithm.
+\item Attributes:
+  \begin{itemize}
+  \item \lstinline|__regularizer|: the regularizer $\lambda$.
+  \end{itemize}
+\item Methods:
+  \begin{itemize}
+  \item \lstinline|__init__(self, dictionary, regularizer)|
+  \item \lstinline|compute_K(self, data_x, data_y)|:
+    Apply the formula $K = A(G + \lambda I)^+$ to compute $K$.
+  \item \lstinline|solve(self, data_x, data_y, n_epochs, batch_size, tolerance)|:
+    Apply EDMD-DL algorithm to solve the system.
+  \end{itemize}
+\end{itemize}
+
+\section{Net and Dataset}
+
+\subsection{Class TanhNet}
+
+\begin{itemize}
+\item Brief description: A simple full-connected network with tanh activation,
+  achieved by pytorch.
+\item Attributes:
+  \begin{itemize}
+  \item \lstinline|__network|: the network.
+  \end{itemize}
+\item Methods:
+  \begin{itemize}
+  \item \lstinline|__init__(self, input_dim, output_dim, hidden_layer_sizes)|
+  \item \lstinline|forward(self, x)|
+  \end{itemize}
+\end{itemize}
+
+\subsection{Class TanhNetWithNonTrainable(TanhNet)}
+
+\begin{itemize}
+\item Brief description: Full-connected network designed for the 
+  \lstinline|TrainableDictionary|,
+  which contains a non-trainable outputs,
+  and a non-trainable layer.
+\item Attributes:
+  \begin{itemize}
+  \item \lstinline|__nontrainable_layer|: the non-trainable layer.
+  \end{itemize}
+\item Methods:
+  \begin{itemize}
+  \item \lstinline|__init__(self, input_dim, output_dim, hidden_layer_sizes, n_nontrainable)|
+
+    \lstinline|n_nontrainable| is the number of non-trainable outputs.
+  \item \lstinline|forward(self, x)|
+  \item \lstinline|set_output_layer(self, weight)|
+  \end{itemize}
+\end{itemize}
+
+\section{ODE and Flowmap}

@@ -8,7 +8,7 @@ Pytorch implementation of EDMDDL [1].
 
 ## Documentation
 
-Comprehensive mathematics details and design documentation are available in the `doc` folder.
+Comprehensive mathematics details and design documentation are available in the `doc` folder. To compile the document, make sure your computer has `texlive` installed.
 
 ``` bash
 git clone https://github.com/ReichtumQian/KoopmanDL.git

@@ -27,13 +27,6 @@ class TrainableDictionary(Dictionary):
     Dictionary.__init__(self, M, func)
     self.__optimizer = optimizer
 
-  def Adjust_lr(self, decay_rate):
-    self.__optimizer.param_groups[0]['lr'] *= decay_rate
-    print("Adjust learning rate to {}".format(self.__optimizer.param_groups[0]['lr']))
-    #if self.__optimizer.param_groups[0]['lr'] < 1e-7:
-    #  print("Learning rate is too small, stop training")
-    #  exit()
-    
   def train(self, data_loader, K, loss_func, n_epochs = 2):
     for _ in range(n_epochs):
       self._func.train()

@@ -1,7 +1,7 @@
 import torch
 from .DataSet import DataSet
 import numpy as np
-#from tqdm import tqdm
+from tqdm import tqdm
 from .Device import DEVICE
 
 class EDMDSolver(object):
@@ -22,8 +22,8 @@ class EDMDSolver(object):
     idx = eigenvalues.real.argsort()[::-1]
     self.eigenvalues = torch.from_numpy(eigenvalues[idx])
     self.right_eigenvectors = torch.from_numpy(eigenvectors[:, idx])
-    self.left_eigenvectors = torch.from_numpy(np.linalg.inv(self.right_eigenvectors)).t()
-    self.left_eigenvectors = torch.conj(self.left_eigenvectors)
+    self.left_eigenvectors = torch.from_numpy(np.linalg.inv(self.right_eigenvectors))
+    self.left_eigenvectors = torch.conj(self.left_eigenvectors.t())
   
   
   def predict(self, x0, traj_len):
@@ -43,14 +43,14 @@ class EDMDSolver(object):
       phi = self.right_eigenvectors.t() @ Psi
       return phi
       
-    traj = [x0]
-    for _ in range(traj_len - 1):
-      x_current = traj[-1]
+    traj = torch.zeros(traj_len, d)
+    traj[0] = x0[0]
+    for i in range(traj_len - 1):
+      x_current = traj[i].unsqueeze(0)
       phi = Phi(x_current)
       x_next = V @ (self.eigenvalues.unsqueeze(1) * phi)
       x_next = x_next.real.t()
-      traj.append(x_next)
-    traj = torch.stack(traj,dim=0).permute(1,0,2) #batch_size * traj_len * dim
+      traj[i+1] = x_next
     return traj
     
 
@@ -82,25 +82,12 @@ class EDMDDLSolver(EDMDSolver):
     data_y = data_y.to(DEVICE)
     self._dictionary.get_func().to(DEVICE)
     Loss = []
-    # with tqdm(range(n_epochs), desc="Training") as pbar:
-    #   for epoch in pbar:
-    #     K = self.compute_K(data_x, data_y)
-    #     loss = self._dictionary.train(data_loader, K, loss_func)
-    #     loss_str = f"{loss.item():.2e}"
-    #     pbar.set_postfix(loss=loss_str)
-    #     Loss.append(loss.item())
-    #     if len(Loss)>2 and Loss[-1]>Loss[-2]:
-    #       self._dictionary.Adjust_lr(0.1)
-    for epoch in np.arange(n_epochs):
+    with tqdm(range(n_epochs), desc="Training") as pbar:
+      for epoch in pbar:
         K = self.compute_K(data_x, data_y)
         loss = self._dictionary.train(data_loader, K, loss_func)
-        #loss_str = f"{loss.item():.2e}"
-        #pbar.set_postfix(loss=loss_str)
-        if epoch % 20 == 0:
-          Loss.append(loss.item())
-          print(f"Epoch {epoch+1}/{n_epochs}, loss = {loss.item():.2e}")
-          if len(Loss)>2 and Loss[-1]>Loss[-2]:
-            self._dictionary.Adjust_lr(0.8)
+        loss_str = f"{loss.item():.2e}"
+        pbar.set_postfix(loss=loss_str)
     data_x = data_x.to(device)
     data_y = data_y.to(device)
     self._dictionary.get_func().to(device)
