@@ -63,7 +63,7 @@ class EDMDSolver(object):
     V = self.left_eigenvectors.t() @ B
     # Compute \Phi
     def Phi(x):
-      Psi = self._dictionary(x)
+      Psi = self._dictionary(x).to(torch.cfloat)
       phi = Psi @ self.right_eigenvectors
       return phi
       
