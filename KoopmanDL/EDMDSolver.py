@@ -56,7 +56,7 @@ class EDMDSolver(object):
     d = x0.size(1)
     assert(d < M)
     # Compute matrix B
-    B = torch.zeros(d, M, dtype=torch.cfloat)
+    B = torch.zeros(M, d, dtype=torch.cfloat)
     for i in range(d):
       B[i+1, i] = 1
     # V mode
