@@ -231,7 +231,7 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
 
 
 \begin{proposition}
-  Suppose $\xi_j$ be a left eigenvector of $K$ with eigenvalue $\mu_j$,
+  Suppose $\xi_j$ be a left eigenvector of matrix $K$ with eigenvalue $\mu_j$,
   then the function
   \begin{equation}
     \label{eq:expression-of-eigenfunction}
@@ -253,40 +253,66 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
   Let $\varphi_j = \xi_j^\ast \Psi$ completes the proof.
 \end{proof}
 
+
 \begin{lemma}
-  \label{lem:lemma-of-expression-of-g}
+  \label{lem:relation-between-right-and-left-eigenvector}
   Under an appropriate scaling,
-  the left eigenvector $w_j$ and the corresponding
-  right eigenvector $v_j$ of a matrix $A$ satisfy
+  the left eigenvector $\xi_j$ and the corresponding
+  right eigenvector $w_j$ of a matrix $K$ satisfy
   \begin{equation}
     \label{eq:relation-between-right-and-left-eigenvector}
-    w_j^{\ast} v_j = 1, \quad w_j^{\ast}v_i = 0 \quad  \mathrm{for} ~ i \neq j.
+    \xi_j^{\ast} w_j = 1, \quad \xi_j^{\ast}w_i = 0 \quad  \mathrm{for} ~ i \neq j.
   \end{equation}
 \end{lemma}
 
 \begin{proof}
-  By the definition of the left eigenvector, we have $w_j^\ast A = \lambda_j w_j^\ast$.
-  Consider the action of $w_j^\ast A$ on the right eigenvector $v_i$:
+  By the definition of the left eigenvector, we have $\xi_j^\ast K = \lambda_j \xi_j^\ast$.
+  Consider the action of $\xi_j^\ast K$ on the right eigenvector $w_i$:
   \begin{equation*}
-  w_j^\ast A v_i = w_j^\ast (\lambda_i v_i) = \lambda_i (w_j^\ast v_i).
+  \xi_j^\ast K w_i = \xi_j^\ast (\lambda_i w_i) = \lambda_i (\xi_j^\ast w_i).
   \end{equation*}
 
-  On the other hand, using the eigenvalue equation for $w_j^\ast$, we also have:
+  On the other hand, using the eigenvalue equation for $\xi_j^\ast$, we also have:
   \begin{equation*}
-  w_j^\ast A v_i = \lambda_j (w_j^\ast v_i).
+  \xi_j^\ast K w_i = \lambda_j (\xi_j^\ast w_i).
   \end{equation*}
   By comparing these two expressions, we obtain:
   \begin{equation*}
-  \lambda_i (w_j^\ast v_i) = \lambda_j (w_j^\ast v_i).
+  \lambda_i (\xi_j^\ast w_i) = \lambda_j (\xi_j^\ast w_i).
   \end{equation*}
-  If $\lambda_i \neq \lambda_j$, this equation implies that $w_j^\ast v_i = 0$.
-  If $\lambda_i = \lambda_j$, then $w_j^\ast v_i$ can be any number.
-  To satisfy the normalization condition, we typically choose $w_j^\ast v_j = 1$.
+  If $\lambda_i \neq \lambda_j$, this equation implies that $\xi_j^\ast w_i = 0$.
+  If $\lambda_i = \lambda_j$, then $\xi_j^\ast w_i$ can be any number.
+  To satisfy the normalization condition, we typically choose $\xi_j^\ast w_j = 1$.
   Thus, under the appropriate scaling, we have:
   \begin{equation*}
-  w_j^\ast v_j = 1, \quad w_j^\ast v_i = 0 \quad \mathrm{for} ~  i \neq j.
+  \xi_j^\ast w_j = 1, \quad \xi_j^\ast w_i = 0 \quad \mathrm{for} ~  i \neq j.
   \end{equation*}
   This completes the proof.
+\end{proof}
+
+\begin{proposition}
+  Given a matrix $K \in \mathbb{R}^{M \times M}$,
+  denote $\Xi = [\xi_1,\cdots,\xi_M]$ and $W = [w_1,\cdots,w_M]$,
+  where $\xi_i, w_i$ are the left eigenvector and right eigenvector
+  of $K$ with eigenvalue $\mu_i$, respectively.
+  Then we have
+  \begin{equation}
+    \label{eq:relation-between-right-and-left-eigenvector-matrix}
+    \Xi^{\ast} = W^{-1}.
+  \end{equation}
+\end{proposition}
+
+\begin{proof}
+  By Lemma \ref{lem:relation-between-right-and-left-eigenvector}
+  we have
+  \begin{equation*}
+  (\Xi^{\ast}W)_{i,j} = \xi_i^{\ast} w_j =
+  \begin{cases}
+    1 & \text{if} ~ i = j;\\
+    0 & \text{if} ~ i \neq j,
+  \end{cases}
+  \end{equation*}
+  i.e., $\Xi^{\ast}W = I$, which completes the proof.
 \end{proof}
 
 \begin{proposition}
@@ -351,12 +377,13 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
         \vdots\\
         \xi_M^T
       \end{array}
-    \right] \Psi(x) = \Xi \Psi(x),
+    \right] \Psi(x) = \Xi^T \Psi(x),
   \end{equation*}
-  then by Lemma \ref{lem:lemma-of-expression-of-g}
+  then by (\ref{eq:relation-between-right-and-left-eigenvector-matrix})
+  we have
   \begin{equation}
     \label{eq:right-eigenvector}
-    \Xi^{-1} = \overline{W}
+    (\Xi^T)^{-1} = \overline{W}
     = \left[
       \begin{array}{cccc}
         \overline{w_1}&\overline{w_2}&\cdots&\overline{w_M}
@@ -364,9 +391,9 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
     \right],
   \end{equation}
   where $w_i$ is the $i$th eigenvector of $K$ with $\mu_i$.
-  We combine (\ref{eq:expression-of-full-time-observable})
+  Combining (\ref{eq:expression-of-full-time-observable})
   and (\ref{eq:right-eigenvector})
-  we have
+  yields
   \begin{equation}
     \label{eq:expression-of-g}
     \mathbf{g}(x) = V \Phi(x) = \sum\limits_{k = 1}^M v_k \varphi_k(x),
@@ -396,7 +423,6 @@ Combined with (\ref{eq:koopman-mode-decomposition-one-step}) we obtain
   x(n) = \sum\limits_{k = 1}^M v_k \mu_k \varphi_k(x(n-1)),
 \end{equation*}
 which means we can predict the whole trajectory step by step.
-In conclusion the prediction can be completed by following steps:
 
 \subsection{The EDMD-DL Algorithm}
 
