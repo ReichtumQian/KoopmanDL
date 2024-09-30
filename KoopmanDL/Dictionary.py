@@ -13,6 +13,9 @@ class Dictionary(object):
   def get_func(self):
     return self._func
   
+  def get_M(self):
+    return self._M
+  
   def __call__(self, x):
     return self._func(x)
 
