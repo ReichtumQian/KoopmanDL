@@ -23,6 +23,7 @@ class EDMDSolver(object):
     self.eigenvalues = torch.from_numpy(eigenvalues[idx])
     self.right_eigenvectors = torch.from_numpy(eigenvectors[:, idx])
     self.left_eigenvectors = torch.from_numpy(np.linalg.inv(self.right_eigenvectors)).t()
+    self.left_eigenvectors = torch.conj(self.left_eigenvectors)
   
   
   def predict(self, x0, traj_len):
@@ -33,50 +34,25 @@ class EDMDSolver(object):
     B = torch.zeros(d, M, dtype=torch.cfloat)
     for i in range(d):
       B[i, i + 1] = 1
-    # Compute W, V
-    W = torch.conj(self.right_eigenvectors)
-    V = B @ W
+    # Compute \Xi, V
+    Xi = torch.conj(self.left_eigenvectors)
+    V = B @ Xi
     # Compute \Phi
     def Phi(x):
-      Psi = self._dictionary(x)
-      phi = torch.conj(self.left_eigenvectors.t()) @ Psi.t().to(torch.cfloat)
+      Psi = self._dictionary(x).to(torch.cfloat).t()
+      phi = self.right_eigenvectors.t() @ Psi
       return phi
       
     traj = [x0]
     for _ in range(traj_len - 1):
       x_current = traj[-1]
       phi = Phi(x_current)
-      x_next = V @ phi
-      x_next = x_next.real.t()
-      traj.append(x_next)
-    return traj
-    
-  def Predict(self, x0, traj_len):
-    M = self._dictionary.get_M()
-    d = x0.size(1)
-    assert(d < M)
-    # Compute matrix B
-    B = torch.zeros(M, d, dtype=torch.cfloat)
-    for i in range(d):
-      B[i+1, i] = 1
-    # V mode
-    V = self.left_eigenvectors.t() @ B
-    # Compute \Phi
-    def Phi(x):
-      Psi = self._dictionary(x).to(torch.cfloat)
-      phi = Psi @ self.right_eigenvectors
-      return phi
-      
-    traj = [x0]
-    for _ in range(traj_len - 1):
-      x_current = traj[-1]
-      phi = Phi(x_current)
-      x_next = (V.t() @ (self.eigenvalues * phi).t())
+      x_next = V @ (self.eigenvalues.unsqueeze(1) * phi)
       x_next = x_next.real.t()
       traj.append(x_next)
     traj = torch.stack(traj,dim=0).permute(1,0,2) #batch_size * traj_len * dim
     return traj
-
+    
 
 class EDMDDLSolver(EDMDSolver):
   

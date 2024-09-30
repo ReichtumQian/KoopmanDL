@@ -231,11 +231,11 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
 
 
 \begin{proposition}
-  Suppose $\xi_j$ be a left eigenvector of matrix $K$ with eigenvalue $\mu_j$,
+  Suppose $w_j$ be a right eigenvector of matrix $K$ with eigenvalue $\mu_j$,
   then the function
   \begin{equation}
     \label{eq:expression-of-eigenfunction}
-    \varphi_j = \xi_j^\ast \Psi
+    \varphi_j = w_j^T \Psi
   \end{equation}
   is an approximation of an eigenfunction of $\mathcal{K}$
   with the same eigenvalue $\mu_j$.
@@ -244,13 +244,13 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
 \begin{proof}
   Direct calculation yields
   \begin{align*}
-    \mathcal{K} \xi_j^\ast \Psi &= \xi_j^\ast \mathcal{K} \Psi\\
-                             &= \xi_j^\ast K^T \Psi\\
-                             &= \mu_j \xi_j^\ast \Psi.
+    \mathcal{K} w_j^T \Psi &= w_j^T \mathcal{K} \Psi\\
+                             &= w_j^T K^T \Psi\\
+                             &= \mu_j w_j^T \Psi.
   \end{align*}
   where the second step is from the relation between $\mathcal{K}$ and K,
   and the third step the definition of left eigenvector.
-  Let $\varphi_j = \xi_j^\ast \Psi$ completes the proof.
+  Let $\varphi_j = w_j^T \Psi$ completes the proof.
 \end{proof}
 
 
@@ -365,7 +365,7 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
       \begin{array}{cccc}
         \varphi_1(x)&\varphi_2(x)&\cdots&\varphi_M(x)
       \end{array}
-    \right].
+    \right]^T.
   \end{equation*}
   By (\ref{eq:expression-of-eigenfunction})
   and (\ref{eq:expression-of-full-time-observable})
@@ -373,24 +373,24 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
   \begin{equation*}
     \Phi(x) = \left[
       \begin{array}{c}
-        \xi_1^T\\
+        w_1^T\\
         \vdots\\
-        \xi_M^T
+        w_M^T
       \end{array}
-    \right] \Psi(x) = \Xi^T \Psi(x),
+    \right] \Psi(x) = W^T \Psi(x),
   \end{equation*}
   then by (\ref{eq:relation-between-right-and-left-eigenvector-matrix})
   we have
   \begin{equation}
     \label{eq:right-eigenvector}
-    (\Xi^T)^{-1} = \overline{W}
+    (W^T)^{-1} = \overline{\Xi}
     = \left[
       \begin{array}{cccc}
-        \overline{w_1}&\overline{w_2}&\cdots&\overline{w_M}
+        \overline{\xi_1}&\overline{\xi_2}&\cdots&\overline{\xi_M}
       \end{array}
     \right],
   \end{equation}
-  where $w_i$ is the $i$th eigenvector of $K$ with $\mu_i$.
+  where $\xi_i$ is the $i$th left eigenvector of $K$ with $\mu_i$.
   Combining (\ref{eq:expression-of-full-time-observable})
   and (\ref{eq:right-eigenvector})
   yields
@@ -398,7 +398,7 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
     \label{eq:expression-of-g}
     \mathbf{g}(x) = V \Phi(x) = \sum\limits_{k = 1}^M v_k \varphi_k(x),
   \end{equation}
-  where $V = [v_1,\cdots,v_M] = B\overline{W} $.
+  where $V = [v_1,\cdots,v_M] = B\overline{\Xi} $.
 \end{proof}
 
 In actual implementation,
