@@ -22,7 +22,7 @@ class EDMDSolver(object):
     idx = eigenvalues.real.argsort()[::-1]
     self.eigenvalues = torch.from_numpy(eigenvalues[idx])
     self.right_eigenvectors = torch.from_numpy(eigenvectors[:, idx])
-    self.left_eigenvectors = torch.from_numpy(np.linalg.inv(eigenvectors))
+    self.left_eigenvectors = torch.from_numpy(np.linalg.inv(self.right_eigenvectors)).t()
   
   
   def predict(self, x0, traj_len):
@@ -32,7 +32,7 @@ class EDMDSolver(object):
     # Compute matrix B
     B = torch.zeros(d, M, dtype=torch.cfloat)
     for i in range(d):
-      B[i, i+1] = 1
+      B[i, i + 1] = 1
     # Compute W, V
     W = torch.conj(self.right_eigenvectors)
     V = B @ W
@@ -47,7 +47,7 @@ class EDMDSolver(object):
       x_current = traj[-1]
       phi = Phi(x_current)
       x_next = V @ phi
-      x_next = x_next.to(torch.float).t()
+      x_next = x_next.real.t()
       traj.append(x_next)
     return traj
       
