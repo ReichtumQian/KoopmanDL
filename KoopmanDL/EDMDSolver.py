@@ -1,7 +1,7 @@
 import torch
 from .DataSet import DataSet
 import numpy as np
-from tqdm import tqdm
+#from tqdm import tqdm
 from .Device import DEVICE
 
 class EDMDSolver(object):
@@ -50,7 +50,32 @@ class EDMDSolver(object):
       x_next = x_next.real.t()
       traj.append(x_next)
     return traj
+    
+  def Predict(self, x0, traj_len):
+    M = self._dictionary.get_M()
+    d = x0.size(1)
+    assert(d < M)
+    # Compute matrix B
+    B = torch.zeros(M, d, dtype=torch.cfloat)
+    for i in range(d):
+      B[i+1, i] = 1
+    # V mode
+    V = self.left_eigenvectors.t() @ B
+    # Compute \Phi
+    def Phi(x):
+      Psi = self._dictionary(x)
+      phi = Psi @ self.right_eigenvectors
+      return phi
       
+    traj = [x0]
+    for _ in range(traj_len - 1):
+      x_current = traj[-1]
+      phi = Phi(x_current)
+      x_next = (V.t() @ (self.eigenvalues * phi).t())
+      x_next = x_next.real.t()
+      traj.append(x_next)
+    traj = torch.stack(traj,dim=0).permute(1,0,2) #batch_size * traj_len * dim
+    return traj
 
 
 class EDMDDLSolver(EDMDSolver):
@@ -80,12 +105,26 @@ class EDMDDLSolver(EDMDSolver):
     data_x = data_x.to(DEVICE)
     data_y = data_y.to(DEVICE)
     self._dictionary.get_func().to(DEVICE)
-    with tqdm(range(n_epochs), desc="Training") as pbar:
-      for epoch in pbar:
+    Loss = []
+    # with tqdm(range(n_epochs), desc="Training") as pbar:
+    #   for epoch in pbar:
+    #     K = self.compute_K(data_x, data_y)
+    #     loss = self._dictionary.train(data_loader, K, loss_func)
+    #     loss_str = f"{loss.item():.2e}"
+    #     pbar.set_postfix(loss=loss_str)
+    #     Loss.append(loss.item())
+    #     if len(Loss)>2 and Loss[-1]>Loss[-2]:
+    #       self._dictionary.Adjust_lr(0.1)
+    for epoch in np.arange(n_epochs):
         K = self.compute_K(data_x, data_y)
         loss = self._dictionary.train(data_loader, K, loss_func)
-        loss_str = f"{loss.item():.2e}"
-        pbar.set_postfix(loss=loss_str)
+        #loss_str = f"{loss.item():.2e}"
+        #pbar.set_postfix(loss=loss_str)
+        if epoch % 20 == 0:
+          Loss.append(loss.item())
+          print(f"Epoch {epoch+1}/{n_epochs}, loss = {loss.item():.2e}")
+          if len(Loss)>2 and Loss[-1]>Loss[-2]:
+            self._dictionary.Adjust_lr(0.8)
     data_x = data_x.to(device)
     data_y = data_y.to(device)
     self._dictionary.get_func().to(device)
