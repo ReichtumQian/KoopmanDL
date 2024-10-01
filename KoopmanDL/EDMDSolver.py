@@ -24,6 +24,13 @@ class EDMDSolver(object):
     self.right_eigenvectors = torch.from_numpy(eigenvectors[:, idx])
     self.left_eigenvectors = torch.from_numpy(np.linalg.inv(self.right_eigenvectors))
     self.left_eigenvectors = torch.conj(self.left_eigenvectors.t())
+    def eigenfunctions(x):
+      data_type = self.eigenvalues.dtype
+      Psi = self._dictionary(x).to(data_type).t()
+      phi = self.right_eigenvectors.t() @ Psi
+      return phi
+    self.eigenfunctions = eigenfunctions
+      
   
   
   def predict(self, x0, traj_len):
@@ -38,17 +45,12 @@ class EDMDSolver(object):
     # Compute \Xi, V
     Xi = torch.conj(self.left_eigenvectors)
     V = B @ Xi
-    # Compute \Phi
-    def Phi(x):
-      Psi = self._dictionary(x).to(data_type).t()
-      phi = self.right_eigenvectors.t() @ Psi
-      return phi
       
     traj = torch.zeros(traj_len, d)
     traj[0] = x0[0]
     for i in range(traj_len - 1):
       x_current = traj[i].unsqueeze(0)
-      phi = Phi(x_current)
+      phi = self.eigenfunctions(x_current)
       x_next = V @ (self.eigenvalues.unsqueeze(1) * phi)
       x_next = x_next.real.t()
       traj[i+1] = x_next
