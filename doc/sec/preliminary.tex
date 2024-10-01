@@ -1,6 +1,7 @@
 
 
 \section{Preliminary}
+
 \subsection{Koopman Operator}
 
 Consider a measure space $(\mathcal{M}, \mathcal{F}, \rho)$,
@@ -10,17 +11,17 @@ on which we define a dynamical system
 \end{equation*}
 
 \begin{definition}
-  Consider the Hilbert space
+  The Hilbert space is defined as:
   \begin{equation*}
   L^2(\mathcal{M}, \rho) = \left\{ \psi: \mathcal{M} \rightarrow \mathbb{C}:
-    \|\psi\|_{L^2(\mathcal{M},\rho)} < \infty \right\},
+    \|\psi\|_{L^2(\mathcal{M},\rho)} < \infty \right\}.
   \end{equation*}
-  for all $\psi \in L^2(\mathcal{M}, \rho)$, it is called an \emph{observable}.
+  An element $\psi \in L^2(\mathcal{M}, \rho)$ is called an \emph{observable}.
 \end{definition}
 
 \begin{definition}
-  For any observable $\psi \in L^2(\mathcal{M}, \rho)$,
-  the \emph{Koopman operator} maps it to another observable
+  The \emph{Koopman operator} maps an observable $\psi \in L^2(\mathcal{M}, \rho)$
+  to another observable $\mathcal{K} f$ defined by:
   \begin{equation*}
     \mathcal{K} \psi = \psi \circ f.
   \end{equation*}
@@ -32,7 +33,7 @@ on which we define a dynamical system
   \begin{equation*}
     \mathcal{K} \psi = \mu \psi,
   \end{equation*}
-  then $\psi$ is called the \emph{eigenfunction of $\mathcal{K}$ with eigenvalue $\mu$}.
+  then $\psi$ is called the \emph{eigenfunction} of $\mathcal{K}$ with eigenvalue $\mu$.
 \end{definition}
 
 \begin{proposition}
@@ -48,14 +49,14 @@ on which we define a dynamical system
 \end{proposition}
 
 \begin{proof}
-  By the formula of dynamical system and
-  the definition of the Koopman operator,
+  By the definition of dynamical system and
+  the Koopman operator,
   we have
   \begin{equation*}
-  \psi(x(n)) = \psi(f(x(n-1))) = \mathcal{K} \psi(x(n-1)).
+    \psi(x(n)) = \psi(f(x(n-1))) = \mathcal{K} \psi(x(n-1)).
   \end{equation*}
-  Since $\psi$ can be decomposed into linear combination of
-  eigenfunctions of $\mathcal{K}$, which yields
+  Since $\psi$ can be decomposed into a linear combination of
+  eigenfunctions of $\mathcal{K}$, it follows that
   \begin{equation*}
     \psi(x(n)) = \mathcal{K} \sum\limits_k \alpha_k \psi_k(x(n-1))
     = \sum\limits_k \alpha_k \mu_k \psi_k(x(n-1)).  \qedhere
@@ -81,26 +82,31 @@ on which we define a dynamical system
     = \mathcal{K}\psi_k(x(n-1))
     = \mu_k\psi_k(x(n-1)),
   \end{equation*}
-  repeatedly applying the above relation into (\ref{eq:koopman-mode-decomposition-one-step})
-  yields (\ref{eq:koopman-mode-decomposition}).
+  repeatedly applying this relation, we get
+  \begin{equation*}
+    \psi_k(x(n)) = \mu_k^n \psi_k(x(0)).
+  \end{equation*}
+  Substituting this into the expression for $\psi(x(n))$
+  from the proposition yields (\ref{eq:koopman-mode-decomposition}).
 \end{proof}
 
 \subsection{The EDMD Algorithm}
 
 The EDMD algorithm aims to find a finite-dimensional
 representation of the Koopman operator $\mathcal{K}$.
-Picking a dictionary $D = \{\psi_1,\psi_2,\cdots,\psi_M\}$,
+We start by selecting a dictionary $D = \{\psi_1,\psi_2,\cdots,\psi_M\}$,
 where
 \begin{equation*}
   \psi_i: \mathcal{M} \rightarrow \mathbb{R},
-  \quad \text{for} \quad i = 1,2,\cdots, M,
+  \quad \text{for} \quad i = 1,2,\cdots, M.
 \end{equation*}
-we consider the span $U(D) = \text{span}\{\psi_1,\cdots,\psi_M\} = \{a^T\Psi:a \in \mathbb{C}^M\}$,
+We consider the span $U(D) = \text{span}\{\psi_1,\cdots,\psi_M\} = \{a^T\Psi:a \in \mathbb{C}^M\}$,
 where $\Psi = [\psi_1,\psi_2,\cdots,\psi_M]^T$.
-Assume that for all $\psi \in U(D)$,
+Assuming that for all $\psi \in U(D)$,
 $\mathcal{K} \psi \in U(D)$,
-then $\mathcal{K}$ is a linear transformation in the space $U(D)$,
-which means $\mathcal{K}$ can be represented
+the Koopman operator $\mathcal{K}$
+acts as a linear transformation in the space $U(D)$.
+Thus, $\mathcal{K}$ can be represented
 by a matrix $K \in \mathbb{R}^{M \times M}$:
 \begin{equation*}
   \mathcal{K} \left[
@@ -114,19 +120,20 @@ by a matrix $K \in \mathbb{R}^{M \times M}$:
   \right]K,
 \end{equation*}
 and given $\psi \in U(D)$ with coordinates $a$,
-the coordinates of $\mathcal{K} \psi$ is $Ka$.
+the coordinates of $\mathcal{K} \psi$ are $Ka$.
 
-However, since the nonlinear properties of $f$,
-the Koopman operator $\mathcal{K}$ is not always equivalent to the matrix $K$.
-But in that case, we can still consider $K$ as a finite-dimensional
+However, due to the nonlinear properties of $f$,
+the Koopman operator $\mathcal{K}$ is not always
+exactly represented by the matrix $K$.
+Nonetheless, $K$ can still serve as a finite-dimensional
 approximation of $\mathcal{K}$.
 
 \subsubsection{Algorithm}
 
-From the view of data science,
+From a data science perspective,
 given a set of data points $\{(x(n), y(n))\}_{n = 1}^N$
 with $y(n) = f(x(n))$,
-we can find $K$ by solving an optimization problem
+we can find $K$ by solving the optimization problem:
 \begin{equation}
   \label{eq:EDMD-problem}
   K = \text{argmin}_{\tilde{K} \in \mathbb{R}^{M \times M}} J(\tilde{K})
@@ -135,7 +142,7 @@ we can find $K$ by solving an optimization problem
 where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
 
 \begin{proposition}
-  The solution of (\ref{eq:EDMD-problem}) is
+  The solution to (\ref{eq:EDMD-problem}) is
   \begin{equation*}
     K = (AG^+)^T,
   \end{equation*}
@@ -148,39 +155,39 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
 
 \begin{proof}
   Denote $X = [\Psi(x(1)),\cdots,\Psi(x(N))], Y =
-  [\Psi(y(1)),\cdots,\Psi(y(N))]$,
-  then (\ref{eq:EDMD-problem}) is equivalent to
+  [\Psi(y(1)),\cdots,\Psi(y(N))]$.
+  Then, (\ref{eq:EDMD-problem}) is equivalent to
   \begin{equation*}
     K = \text{argmin}_{\tilde{K} \in \mathbb{R}^{M \times M}} J(\tilde{K})
-    = \|Y - \tilde{K}X\|_F^2,
+    = \|Y - \tilde{K}^TX\|_F^2,
   \end{equation*}
   where $\|\cdot\|_F$ is Frobenius norm.
   To minimize $J(\tilde{K})$, we take its derivative with respect to $\tilde{K}$,
   \begin{equation*}
-    \frac{\partial J(\tilde{K})}{\partial \tilde{K}}
-    = - 2(Y - \tilde{K}X)X^T,
+    \frac{\partial J(\tilde{K})}{\partial \tilde{K}^T}
+    = - 2(Y - \tilde{K}^TX)X^T,
   \end{equation*}
   and let the derivative to be zero, i.e.,
-  $2(Y-\tilde{K}X)X^T = 0$,
+  $2(Y-\tilde{K}^TX)X^T = 0$,
   which yields
   \begin{equation*}
-    YX^T = \tilde{K}XX^T.
+    YX^T = \tilde{K}^TXX^T.
   \end{equation*}
   By taking the pseudo inverse of $XX^T$,
   we obtain
   \begin{equation*}
-    K = (YX^T)(XX^T)^+.
+    K^T = (YX^T)(XX^T)^+.
   \end{equation*}
 
-  Now we show that $(YX^T)(XX^T)^+ = AG^+$,
-  by the definition of matrix multiplication
+  To show $(YX^T)(XX^T)^+ = AG^+$,
+  we note:
   \begin{equation*}
     G(i,j) = \frac{1}{N} \sum\limits_{n = 1}^N \psi_i(x(n))\psi_j(x(n)), \quad
     (XX^T)(i,j) = \sum\limits_{n = 1}^N X(i,n)X(j,n) = \sum\limits_{n = 1}^N \psi_i(x(n))\psi_j(x(n)),
   \end{equation*}
   i.e., $XX^T = N \cdot G$.
-  The same reasoning yields $YX^T = N \cdot A$.
-  By the properties of pseudo inverse,
+  Similaryly, $YX^T = N \cdot A$.
+  By the properties of the pseudo inverse,
   we have
   \begin{equation*}
     K = AG^+ = (YX^T)(XX^T)^+. \qedhere
@@ -191,8 +198,8 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
 
 
 \begin{proposition}
-  Suppose $w_j$ be a right eigenvector of matrix $K$ with eigenvalue $\mu_j$,
-  then the function
+  Suppose $w_j$ is a right eigenvector of matrix $K$ with eigenvalue $\mu_j$.
+  Then the function
   \begin{equation}
     \label{eq:expression-of-eigenfunction}
     \varphi_j = w_j^T \Psi
@@ -208,15 +215,15 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
                              &= w_j^T K^T \Psi\\
                              &= \mu_j w_j^T \Psi.
   \end{align*}
-  where the second step is from the relation between $\mathcal{K}$ and K,
-  and the third step the definition of left eigenvector.
-  Let $\varphi_j = w_j^T \Psi$ completes the proof.
+  where the second step follows from the relation between $\mathcal{K}$ and K,
+  and the third step from the definition of the left eigenvector.
+  Letting $\varphi_j = w_j^T \Psi$ completes the proof.
 \end{proof}
 
 
 \begin{lemma}
   \label{lem:relation-between-right-and-left-eigenvector}
-  Under an appropriate scaling,
+  Under appropriate scaling,
   the left eigenvector $\xi_j$ and the corresponding
   right eigenvector $w_j$ of a matrix $K$ satisfy
   \begin{equation}
@@ -253,7 +260,7 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
 \begin{proposition}
   Given a matrix $K \in \mathbb{R}^{M \times M}$,
   denote $\Xi = [\xi_1,\cdots,\xi_M]$ and $W = [w_1,\cdots,w_M]$,
-  where $\xi_i, w_i$ are the left eigenvector and right eigenvector
+  where $\xi_i, w_i$ are the left eigenvectors and right eigenvectors
   of $K$ with eigenvalue $\mu_i$, respectively.
   Then we have
   \begin{equation}
@@ -276,13 +283,13 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
 \end{proof}
 
 \begin{proposition}
-  Consider the full-time observable $\mathbf{g}(x) = x$,
-  assume that for all $g_i(x) \in L^2(\mathcal{M}, \rho)$,
-  then there exists $V \in \mathbb{C}^{d \times M}$ such that
+  Consider the full-time observable $\mathbf{g}(x) = x$.
+  Assume that for all $g_i(x) \in L^2(\mathcal{M}, \rho)$,
+  there exists $V \in \mathbb{C}^{d \times M}$ such that
   \begin{equation*}
     \mathbf{g}(x) = V \Phi(x),
   \end{equation*}
-  where $\Phi(x) = [\varphi_1(x),\cdots,\varphi_M(x)]$.
+  where $\Phi(x) = [\varphi_1(x),\cdots,\varphi_M(x)]^T$.
 \end{proposition}
 
 \begin{proof}
@@ -305,8 +312,8 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
     \right],
   \end{equation*}
   where $e_i$ is the $i$th unit vector in $\mathbb{R}^d$.
-  Here we just assume all $g_i(x) \in L^2(\mathcal{M}, \rho)$,
-  so $g_i(x) = \sum\limits_{k = 1}^M \psi_k(x) b_{k,i} = \mathbf{b}_i^T \Psi(x)$,
+  Assuming all $g_i(x) \in L^2(\mathcal{M}, \rho)$,
+  we have $g_i(x) = \sum\limits_{k = 1}^M \psi_k(x) b_{k,i} = \mathbf{b}_i^T \Psi(x)$,
   which yields
   \begin{equation}
     \label{eq:expression-of-full-time-observable}
@@ -318,8 +325,8 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
     = B\Psi(x),
   \end{equation}
   where $B = [\mathbf{b}_1,\cdots,\mathbf{b}_d]^T$.
-  Now we are going to express $\psi_i$ in terms of $\varphi_i$,
-  define
+  Next, we express $\psi_i$ in terms of $\varphi_i$.
+  Define
   \begin{equation*}
     \Phi(x) = \left[
       \begin{array}{cccc}
@@ -328,7 +335,7 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
     \right]^T.
   \end{equation*}
   By (\ref{eq:expression-of-eigenfunction})
-  and (\ref{eq:expression-of-full-time-observable})
+  and (\ref{eq:expression-of-full-time-observable}),
   we have
   \begin{equation*}
     \Phi(x) = \left[
@@ -337,9 +344,9 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
         \vdots\\
         w_M^T
       \end{array}
-    \right] \Psi(x) = W^T \Psi(x),
+    \right] \Psi(x) = W^T \Psi(x).
   \end{equation*}
-  then by (\ref{eq:relation-between-right-and-left-eigenvector-matrix})
+  Then by (\ref{eq:relation-between-right-and-left-eigenvector-matrix}),
   we have
   \begin{equation}
     \label{eq:right-eigenvector}
@@ -352,8 +359,8 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
   \end{equation}
   where $\xi_i$ is the $i$th left eigenvector of $K$ with $\mu_i$.
   Combining (\ref{eq:expression-of-full-time-observable})
-  and (\ref{eq:right-eigenvector})
-  yields
+  and (\ref{eq:right-eigenvector}),
+  we get
   \begin{equation}
     \label{eq:expression-of-g}
     \mathbf{g}(x) = V \Phi(x) = \sum\limits_{k = 1}^M v_k \varphi_k(x),
@@ -368,29 +375,29 @@ which implies
 \begin{equation*}
 g_i(x) = \mathbf{b}_i^T \Psi(x) = e_{i+1}^T \Psi(x),
 \end{equation*}
-where $e_i \in \mathbb{R}^M$ have an $i$th element being $1$
+where $e_i \in \mathbb{R}^M$ has the $i$th element being $1$
 and $0$ otherwise.
-Thus the matrix $B$ can be simply computed as
+Thus, the matrix $B$ can be computed as
 \begin{equation*}
   B = [e_2, e_3, \cdots, e_{d+1}]^T.
 \end{equation*}
-With $B, W$ computed, $\mathbf{g}(x)$ can be derived in the form
+With $B$ and $W$ computed, $\mathbf{g}(x)$ can be derived in the form
 \begin{equation*}
   \mathbf{g}(x) = \sum\limits_{k = 1}^M v_k\varphi_k(x).
 \end{equation*}
-Combined with (\ref{eq:koopman-mode-decomposition-one-step}) we obtain
+Combining this with (\ref{eq:koopman-mode-decomposition-one-step}), we obtain
 \begin{equation*}
   x(n) = \sum\limits_{k = 1}^M v_k \mu_k \varphi_k(x(n-1)),
 \end{equation*}
-which means we can predict the whole trajectory step by step.
+which means we can predict the entire trajectory step by step.
 
 \subsection{The EDMD-DL Algorithm}
 
 \subsection{RBF Functions}
 
 \begin{definition}
-  Let $(V, \|\cdot\|)$ be a normed linear space,
-  a function $\varphi: V \rightarrow \mathbb{R}$ is called
+  Let $(V, \|\cdot\|)$ be a normed linear space.
+  A function $\varphi: V \rightarrow \mathbb{R}$ is called
   a \emph{radial basis function (RBF)} if
   there exists a univariate function $\hat{\varphi}: [0, +\infty) \rightarrow \mathbb{R}$
   such that for all $\mathbf{x} \in V$
@@ -400,24 +407,24 @@ which means we can predict the whole trajectory step by step.
   for some center point $\mathbf{c} \in V$.
 \end{definition}
 
-Assume we want to build a RBF Dictionary
-with $M$ RBF centers and a regularizer $\lambda \in \mathbb{R}$.
-Given a dataset $X \in \mathbb{R}^{N \times D}$,
+To construct a RBF Dictionary
+with $M$ RBF centers and a regularizer $\lambda \in \mathbb{R}$,
+we start with a dataset $X \in \mathbb{R}^{N \times d}$,
 where $N$ is the number of samples and
-$D$ is the number of features,
-we first apply k-means clustering to find $M$ centers:
+$d$ is the number of features.
+We first apply k-means clustering to find $M$ centers:
 \begin{equation*}
-  \{\mu_1, \mu_2, \cdots, \mu_M\} \subset \mathbb{R}^D.
+  \{c_1, c_2, \cdots, c_M\} \subset \mathbb{R}^d.
 \end{equation*}
 For each data point $\mathbf{x}_i \in X$,
-the distance between $\mathbf{x}_i$ and $\mu_j$ is
-$r_{ij} = \|\mathbf{x}_i - \mu_j\|$,
-then the RBF value is computed as
+the distance between $\mathbf{x}_i$ and $c_j$ is
+given by $r_{ij} = \|\mathbf{x}_i - c_j\|$.
+The RBF value is then computed as
 \begin{equation*}
   \phi_{ij} = (r_{ij})^2 \log(r_{ij} + \lambda),
 \end{equation*}
 where $\phi_{ij}$ is the RBF value for the
-$i$-th data point and the $j$-th center.
+$i$th data point and the $j$-th center.
 Collecting all the RBF values yields a matrix $\Phi \in \mathbb{R}^{N \times M}$
 \begin{equation*}
   \Phi = \left[
@@ -429,9 +436,9 @@ Collecting all the RBF values yields a matrix $\Phi \in \mathbb{R}^{N \times M}$
     \end{array}
   \right].
 \end{equation*}
-To keep the same as Trainable Dictionary,
-we add one column of all-one vector and
-the projection part
+To maintain consistency with the trainable dictionary,
+we add a column of ones and
+include the original data matrix $X$:
 \begin{equation*}
   \text{output} = \left[
     \begin{array}{ccc}
