@@ -22,3 +22,12 @@ class DuffingOscillator(ODE):
         [x[:, 1], -delta * x[:, 1] - x[:, 0] * (beta + alpha * x[:, 0]**2)],
         dim=1)
     super().__init__(rhs, dim)
+
+class VanDerPolOscillator(ODE):
+
+  def __init__(self, alpha):
+    dim = 2
+    rhs = lambda x: torch.stack([x[:, 1], alpha * (1 - x[:, 0]**2) * x[:, 1] - x[:, 0]], dim=1)
+    super().__init__(rhs, dim)
+
+
