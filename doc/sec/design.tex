@@ -5,29 +5,27 @@
 
 \begin{itemize}
 \item Brief description: A dictionary is vector function
-  $\Psi: \mathbb{R}^d \rightarrow \mathbb{R}^M$.
-  Batch operation is also supported $\Psi: \mathbb{R}^{N \times d} \rightarrow
-  \mathbb{R}^{N \times M}$
+  $\Psi: \mathbb{R}^{N \times d} \rightarrow
+  \mathbb{R}^{N \times M}$,
+  where $N$ is the size of the data set.
 \item Attributes:
   \begin{itemize}
-  \item \lstinline|_func|: The vector function.
+  \item \lstinline|_func|: The vector function $\Psi: \mathbb{R}^{N \times d} \rightarrow \mathbb{R}^{N \times M}$.
   \item \lstinline|_M|: The output dimension of the vector function.
   \end{itemize}
 \item Methods:
   \begin{itemize}
   \item \lstinline|__init__(self, M, func)|: initialize the dictionary.
-    Note \lstinline|func| must support batch operation
   \item \lstinline|__call__(self, x)|: apply the dictionary,
-    the input must satisfy $x \in \mathbb{R}^d$ or $x \in \mathbb{R}^{N \times d}$.
+    the input must satisfy $x \in \mathbb{R}^{N \times d}$.
   \end{itemize}
 \end{itemize}
 
 \subsection{Class TrainableDictionary(Dictionary)}
 
 \begin{itemize}
-\item Brief description: A dictionary that contains a trainable neural network.
-  It is a vector function $\mathbb{R}^d \rightarrow \mathbb{R}^M$,
-  the output contains non-trainable outputs $\mathbf{1}$ and $x$.
+\item Brief description: A dictionary that contains a trainable neural network $\mathbb{R}^{N \times d} \rightarrow \mathbb{R}^{N \times M}$.
+  The result contains non-trainable outputs $\mathbf{1}$ and $x$.
 \item Attributes:
   \begin{itemize}
   \item \lstinline|__optimizer|: the optimizer of the trainable neural network.
@@ -44,7 +42,15 @@
 \subsection{Class RBFDictionary(Dictionary)}
 
 \begin{itemize}
-\item Brief description: 
+\item Brief description: A dictionary whose basis functions are radial basis functions.
+\item Attributes:
+  \begin{itemize}
+  \item \lstinline|__regularizer|: the regularization factor.
+  \end{itemize}
+\item Methods:
+  \begin{itemize}
+  \item \lstinline|build(self, data)|: build the basis functions and the dictionary.
+  \end{itemize}
 \end{itemize}
 
 \section{Solver}
@@ -56,14 +62,19 @@
   also acts as the base class of \lstinline|EDMDDLSolver|.
 \item Attributes:
   \begin{itemize}
+  \item \lstinline|_dictionary|: 
+  \end{itemize}
+\item Methods:
+  \begin{itemize}
   \item \lstinline|__init__(self, dictionary)|
   \item \lstinline|compute_K(self, data_x, data_y)|:
     Apply the formula $K = AG^+$ to compute $K$.
+  \item \lstinline|compute_eig(self, K)|
+  \item \lstinline|predict(self, x0, traj_len)|
+  \item \lstinline|save(self, path)|
+  \item \lstinline|load(self, path)|
   \end{itemize}
-\item Methods:
 \end{itemize}
-
-
 
 \subsection{Class EDMDDLSolver(EDMDSolver)}
 
@@ -85,7 +96,24 @@
 
 \section{Net and Dataset}
 
-\subsection{Class TanhNet}
+\subsection{Class TanhResBlock(torch.nn.Module)}
+
+\begin{itemize}
+\item Brief description: A residual block with tanh activation function.
+\item Attributes:
+  \begin{itemize}
+  \item \lstinline|__linear1|: 
+  \item \lstinline|__tanh|: 
+  \item \lstinline|__linear2|:
+  \item \lstinline|__shortcut|:
+  \end{itemize}
+\item Methods:
+  \begin{itemize}
+  \item \lstinline|forward(x)|:
+  \end{itemize}
+\end{itemize}
+
+\subsection{Class TanhResNet(torch.nn.Module)}
 
 \begin{itemize}
 \item Brief description: A simple full-connected network with tanh activation,
@@ -123,3 +151,68 @@
 \end{itemize}
 
 \section{ODE and Flowmap}
+
+\subsection{Class ODE}
+
+\begin{itemize}
+\item Brief description: Abstract basis class of ordinary
+  differential equations.
+\item Attributes:
+  \begin{itemize}
+  \item \lstinline|_dim|
+  \item \lstinline|_rhs|
+  \end{itemize}
+\item Methods:
+  \begin{itemize}
+  \item \lstinline|__init__(self, rhs, dim)|
+  \end{itemize}
+\end{itemize}
+
+\subsection{Class DuffingOscillator}
+
+\begin{itemize}
+\item Brief description: Implementation of Duffing Oscillator model.
+\item Methods:
+  \begin{itemize}
+  \item \lstinline|__init__(self, alpha, beta, delta)|
+  \end{itemize}
+\end{itemize}
+
+\subsection{Class VanDerPolOscillator}
+
+\begin{itemize}
+\item Brief description: Implementation of Van der Pol Oscillator model.
+\item Methods:
+  \begin{itemize}
+  \item \lstinline|__init__(self, alpha)|
+  \end{itemize}
+\item 
+\end{itemize}
+
+\subsection{Class FlowMap}
+
+\begin{itemize}
+\item Brief description: Implementation of flowmap
+  $\varphi_t(x) := x(t), x(0) = x$.
+  This class acts as the basis class of numerical solvers
+  for IVP.
+\item Attributes:
+  \begin{itemize}
+  \item \lstinline|_dt|
+  \end{itemize}
+\item Methods:
+  \begin{itemize}
+  \item \lstinline|step(self, ode, x_init)|
+  \end{itemize}
+\end{itemize}
+
+\subsection{Class ForwardEuler(FlowMap)}
+
+\begin{itemize}
+\item Brief description: Implementation of (forward) euler
+  method $U^{n+1} = U^n + kf(U^n)$,
+  where $k$ is the time step.
+\end{itemize}
+
+
+
