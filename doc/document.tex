@@ -34,6 +34,8 @@
 \def\renewtheorem@within[#1]{\renewtheorem@nowithin[#1]}
 \makeatother
 \newcommand{\SECDIR}{./sec/}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
 
 \begin{document}
 \maketitle
@@ -43,7 +45,8 @@
 \input{{\SECDIR}preliminary.tex}
 \input{{\SECDIR}design.tex}
 
-
+\nocite{*}
+\printbibliography[heading=bibintoc, title=\ebibname]
 
 
 

@@ -8,7 +8,20 @@ This is my first project written in Python and PyTorch. If you find anything tha
 - **Programming-Mathematics Mapping**: We carefully designed the classes to ensure a clear one-to-one correspondence between programming constructs and mathematical concepts.
 - **Framework**: The implementation is carried out in `Pytorch`.
 
-## Documentation (Work in Progress)
+## Quick Start
+
+We highly recommend using `Anaconda` to manage the environment. If you have it installed, you can simply run:
+
+``` bash
+# Create a new environment
+conda create -n KoopmanDL python=3.8
+conda activate KoopmanDL
+pip install -r requirements.txt
+```
+
+Some examples are provided in the `example` folder.
+
+## Documentation
 
 Comprehensive mathematics details and design documentation are available in the `doc` folder. To compile the document, make sure your computer has `texlive` installed.
 

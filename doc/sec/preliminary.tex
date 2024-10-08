@@ -136,7 +136,7 @@ with $y(n) = f(x(n))$,
 we can find $K$ by solving the optimization problem:
 \begin{equation}
   \label{eq:EDMD-problem}
-  K = \text{argmin}_{\tilde{K} \in \mathbb{R}^{M \times M}} J(\tilde{K})
+  K = \argmin\limits_{\tilde{K} \in \mathbb{R}^{M \times M}} J(\tilde{K})
   = \sum\limits_{n = 1}^N \|\Psi(y(n)) - \tilde{K}^T \Psi(x(n))\|_2^2,
 \end{equation}
 where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
@@ -147,10 +147,11 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
     K = (AG^+)^T,
   \end{equation*}
   where
-  \begin{equation*}
+  \begin{equation}
+    \label{eq:EDMD-GA}
     G = \frac{1}{N} \sum\limits_{n = 1}^N \Psi(x(n)) \Psi(x(n))^T,
     \quad A = \frac{1}{N} \sum\limits_{n = 1}^N \Psi(y(n)) \Psi(x(n))^T.
-  \end{equation*}
+  \end{equation}
 \end{proposition}
 
 \begin{proof}
@@ -158,11 +159,11 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
   [\Psi(y(1)),\cdots,\Psi(y(N))]$.
   Then, (\ref{eq:EDMD-problem}) is equivalent to
   \begin{equation*}
-    K = \text{argmin}_{\tilde{K} \in \mathbb{R}^{M \times M}} J(\tilde{K})
+    K = \argmin\limits_{\tilde{K} \in \mathbb{R}^{M \times M}} J(\tilde{K})
     = \|Y - \tilde{K}^TX\|_F^2,
   \end{equation*}
   where $\|\cdot\|_F$ is Frobenius norm.
-  To minimize $J(\tilde{K})$, we take its derivative with respect to $\tilde{K}$,
+  To minimize $J(\tilde{K})$, we take its derivative with respect to $\tilde{K}^T$,
   \begin{equation*}
     \frac{\partial J(\tilde{K})}{\partial \tilde{K}^T}
     = - 2(Y - \tilde{K}^TX)X^T,
@@ -186,7 +187,7 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
     (XX^T)(i,j) = \sum\limits_{n = 1}^N X(i,n)X(j,n) = \sum\limits_{n = 1}^N \psi_i(x(n))\psi_j(x(n)),
   \end{equation*}
   i.e., $XX^T = N \cdot G$.
-  Similaryly, $YX^T = N \cdot A$.
+  Similarily, $YX^T = N \cdot A$.
   By the properties of the pseudo inverse,
   we have
   \begin{equation*}
@@ -393,6 +394,47 @@ which means we can predict the entire trajectory step by step.
 
 \subsection{The EDMD-DL Algorithm}
 
+EDMD-DL is an extension of EDMD algorithm that
+incorporates deep learning to improve the selection of the dictionary.
+Specifically, the dictionary functions are parameterized using neural networks
+of the form $\Psi(x;\theta)$.
+For instance, a 3-layer neural network can
+approximate $\Psi$ as follows:
+\begin{align*}
+  &\Psi(x) = W_{\text{out}}h_3 + b_{\text{out}},\\
+  &h_{k+1} = \tanh(W_kh_k + b_k), \quad k = 0,1,2,
+\end{align*}
+where $h_0 = x$, and
+$W_0 \in \mathbb{R}^{\ell \times d}, b_0 \in \mathbb{R}^d, W_{\text{out}} \in
+\mathbb{R}^{M \times \ell}, b_{\text{out}} \in \mathbb{R}^M$,
+and $W_k \in \mathbb{R}^{\ell \times \ell}$ for $k = 1, 2$.
+
+With $\Psi$ parameterized, the optimization problem is formulated as:
+\begin{equation}
+  \label{eq:EDMDDL-problem}
+  (K, \theta) = \argmin \limits_{(\tilde{K}, \tilde{\theta})}
+  = \sum\limits_{n = 1}^N \|\Psi(y(n); \tilde{\theta}) - \tilde{K} \Psi(x(n), \tilde{\theta})\|^2
+  + \lambda \|\tilde{K}\|_F^2.
+\end{equation}
+We solve (\ref{eq:EDMDDL-problem}) by iterating through the following steps:
+\begin{itemize}
+\item \textbf{Fix $\theta$, optimize $K$.}
+  For a fixed $\theta$ and $\Psi$,
+  compute $K$ using the formula
+  \begin{equation}
+    \label{eq:EDMDDL-K}
+    \tilde{K}^T = A(G(\tilde{\theta}) + \lambda I)^+,
+  \end{equation}
+  where $G$ and $A$ are defined in (\ref{eq:EDMD-GA}).
+\item \textbf{Fix $K$, optimize $\theta$.}
+  Optimize the trainable dictionary using gradient descent ,i.e.,
+  \begin{equation}
+    \label{eq:EDMDDL-gradient-descent}
+    \tilde{\theta} \leftarrow \tilde{\theta} - \delta \nabla_{\theta}J(\tilde{K}, \tilde{\theta}).
+  \end{equation}
+\end{itemize}
+
+
 \subsection{RBF Functions}
 
 \begin{definition}
@@ -448,3 +490,6 @@ include the original data matrix $X$:
 \end{equation*}
 where $\mathbf{1} \in \mathbb{R}^{N\times 1}$ is a vector with all elements
 equal to one.
+
+
+

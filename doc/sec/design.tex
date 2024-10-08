@@ -4,52 +4,62 @@
 \subsection{Class Dictionary}
 
 \begin{itemize}
-\item Brief description: A dictionary is vector function
-  $\Psi: \mathbb{R}^{N \times d} \rightarrow
+\item Brief Description: A \lstinline|Dictionary| is a batched vector function,
+  represented by $\Psi: \mathbb{R}^{N \times d} \rightarrow
   \mathbb{R}^{N \times M}$,
-  where $N$ is the size of the data set.
+  where $N$ is the size of the dataset.
 \item Attributes:
   \begin{itemize}
-  \item \lstinline|_func|: The vector function $\Psi: \mathbb{R}^{N \times d} \rightarrow \mathbb{R}^{N \times M}$.
+  \item \lstinline|_func|: The batched vector function.
+  $\Psi: \mathbb{R}^{N \times d} \rightarrow \mathbb{R}^{N \times M}$.
   \item \lstinline|_M|: The output dimension of the vector function.
   \end{itemize}
 \item Methods:
   \begin{itemize}
-  \item \lstinline|__init__(self, M, func)|: initialize the dictionary.
-  \item \lstinline|__call__(self, x)|: apply the dictionary,
-    the input must satisfy $x \in \mathbb{R}^{N \times d}$.
+  \item \lstinline|__init__(self, M, func)|: Initializes the dictionary
+  with output dimension \lstinline|M| and vector function \lstinline|func|.
+  \item \lstinline|__call__(self, x)|: Applies the dictionary to input \lstinline|x|,
+    which must satisfy $x \in \mathbb{R}^{N \times d}$.
   \end{itemize}
 \end{itemize}
 
 \subsection{Class TrainableDictionary(Dictionary)}
 
 \begin{itemize}
-\item Brief description: A dictionary that contains a trainable neural network $\mathbb{R}^{N \times d} \rightarrow \mathbb{R}^{N \times M}$.
-  The result contains non-trainable outputs $\mathbf{1}$ and $x$.
+\item Brief Description: A \lstinline|TrainableDictionary|
+  is a dictionary containing a trainable neural network,
+  mapping $\mathbb{R}^{N \times d} \rightarrow \mathbb{R}^{N \times M}$.
+  The output includes non-trainable components $\mathbf{1}$ and $x$.
 \item Attributes:
   \begin{itemize}
-  \item \lstinline|__optimizer|: the optimizer of the trainable neural network.
+  \item \lstinline|__optimizer|: The optimizer of the trainable neural network.
   \end{itemize}
 \item Methods:
   \begin{itemize}
   \item \lstinline|__init__(self, M, func, optimizer)|:
-  Note \lstinline|func| must be an instance of \lstinline|torch.nn.Module|.
+  Initializes the trainable dictionary.
+  The \lstinline|func| must be an instance of \lstinline|torch.nn.Module|.
   \item \lstinline|train(self, data_loader, loss_func, n_epochs)|:
-  train the neural network.
+  Trains the neural network using the provided data loader, loss function,
+  and number of epochs.
   \end{itemize}
 \end{itemize}
 
 \subsection{Class RBFDictionary(Dictionary)}
 
 \begin{itemize}
-\item Brief description: A dictionary whose basis functions are radial basis functions.
+\item Brief Description:
+  An \lstinline|RBFDictionary| is a dictionary
+  whose basis functions are radial basis functions (RBFs).
+  The output includes non-trainable components $\mathbf{1}$ and $x$.
 \item Attributes:
   \begin{itemize}
-  \item \lstinline|__regularizer|: the regularization factor.
+  \item \lstinline|__regularizer|: The regularization factor for the RBFs.
   \end{itemize}
 \item Methods:
   \begin{itemize}
-  \item \lstinline|build(self, data)|: build the basis functions and the dictionary.
+  \item \lstinline|build(self, data)|: Builds the basis functions and the dictionary
+  using the provided data.
   \end{itemize}
 \end{itemize}
 
@@ -58,95 +68,115 @@
 \subsection{Class EDMDSolver}
 
 \begin{itemize}
-\item Brief description: Implementation of EDMD algorithm,
-  also acts as the base class of \lstinline|EDMDDLSolver|.
+\item Brief Description: This class implements the EDMD algorithm.
+  It also serves as the base class for \lstinline|EDMDDLSolver|
 \item Attributes:
   \begin{itemize}
-  \item \lstinline|_dictionary|: 
+  \item \lstinline|_dictionary|:
+    A dictionary composed of basis functions.
+    It can be an instance of \lstinline|Dictionary|
+    or \lstinline|RBFDictionary|,
+    but not \lstinline|TrainableDictionary|.
+  \item \lstinline|eigenvalues|: Stores the eigenvalues of $K$.
+  \item \lstinline|right_eigenvectors|: A 2D tensor where each column represents a right eigenvector of the matrix $K$.
+  \item \lstinline|left_eigenvectors|: A 2D tensor where each column represents a left eigenvector of the matrix $K$.
   \end{itemize}
 \item Methods:
   \begin{itemize}
-  \item \lstinline|__init__(self, dictionary)|
+  \item \lstinline|__init__(self, dictionary)|:
+    Initializes the \lstinline|EDMDSolver| with the specified dictionary.
   \item \lstinline|compute_K(self, data_x, data_y)|:
-    Apply the formula $K = AG^+$ to compute $K$.
-  \item \lstinline|compute_eig(self, K)|
-  \item \lstinline|predict(self, x0, traj_len)|
-  \item \lstinline|save(self, path)|
-  \item \lstinline|load(self, path)|
+    Computes the matrix $K$ using the formula $K = (AG^+)^T$,
+    where $G^+$ denotes the pseudoinverse of $G$.
+  \item \lstinline|compute_eig(self, K)|: Computes the eigenvalues,
+    left eigenvectors and right eigenvectors of the matrix $K$.
+  \item \lstinline|predict(self, x0, traj_len)|: 
+    Predicts the trajectory of the system starting from $x_0$
+    with length $traj\_len$.
+  \item \lstinline|save(self, path)|: Saves the solver to the specified path.
+  \item \lstinline|load(self, path)|: Loads the solver from the specified path.
   \end{itemize}
 \end{itemize}
 
 \subsection{Class EDMDDLSolver(EDMDSolver)}
 
 \begin{itemize}
-\item Brief description: Implementation of EDMD-DL algorithm.
+\item Brief Description: This class implements the EDMD-DL algorithm.
 \item Attributes:
   \begin{itemize}
-  \item \lstinline|__regularizer|: the regularizer $\lambda$.
+  \item \lstinline|__regularizer|: the regularizer $\lambda$
+    used in the computation of $K$.
   \end{itemize}
 \item Methods:
   \begin{itemize}
-  \item \lstinline|__init__(self, dictionary, regularizer)|
+  \item \lstinline|__init__(self, dictionary, regularizer)|:
+    Initializes the \lstinline|EDMDDLSolver| with the specified dictionary
+    and regularization parameter.
   \item \lstinline|compute_K(self, data_x, data_y)|:
-    Apply the formula $K = A(G + \lambda I)^+$ to compute $K$.
+    Computes the matrix $K$ using the formula $K^T = A(G + \lambda I)^+$,
+    where $I$ is the identity matrix and $\lambda$ is the regularization parameter.
   \item \lstinline|solve(self, data_x, data_y, n_epochs, batch_size, tolerance)|:
-    Apply EDMD-DL algorithm to solve the system.
+    Applies the EDMD-DL algorithm to solve the system,
+    iterating for a specified number of epochs, batch size and tolerance.
   \end{itemize}
 \end{itemize}
 
-\section{Net and Dataset}
+\section{Neural Networks}
 
 \subsection{Class TanhResBlock(torch.nn.Module)}
 
 \begin{itemize}
-\item Brief description: A residual block with tanh activation function.
+\item Brief Description: A residual block with tanh activation function.
 \item Attributes:
   \begin{itemize}
-  \item \lstinline|__linear1|: 
-  \item \lstinline|__tanh|: 
-  \item \lstinline|__linear2|:
-  \item \lstinline|__shortcut|:
+  \item \lstinline|__linear1|: A fully connected (linear) layer that maps the input to an intermediate representation.
+  \item \lstinline|__tanh|: The tanh activation function applied to the output of the first linear layer.
+  \item \lstinline|__linear2|: A second fully connected layer that maps the activated intermediate representation back to the original input dimension.
+  \item \lstinline|__shortcut|: A mechanism to bypass the block by adding the input directly to the output of the second linear layer, facilitating the residual connection.
   \end{itemize}
 \item Methods:
   \begin{itemize}
   \item \lstinline|forward(x)|:
+  Computes the forward pass of the block. 
+  Applies the first linear transformation, followed by the tanh activation, 
+  a second linear transformation, 
+  and finally adds the input to the output (residual connection).
   \end{itemize}
 \end{itemize}
 
 \subsection{Class TanhResNet(torch.nn.Module)}
 
 \begin{itemize}
-\item Brief description: A simple full-connected network with tanh activation,
-  achieved by pytorch.
+\item Brief Description: A simple full-connected network with tanh activation,
+  achieved by PyTorch.
 \item Attributes:
   \begin{itemize}
-  \item \lstinline|__network|: the network.
+  \item \lstinline|__network|: 
+  A sequential container of \lstinline|TanhResBlock| instances 
+  forming the network's architecture.
   \end{itemize}
 \item Methods:
   \begin{itemize}
-  \item \lstinline|__init__(self, input_dim, output_dim, hidden_layer_sizes)|
-  \item \lstinline|forward(self, x)|
+  \item \lstinline|__init__(self, input_dim, output_dim, hidden_layer_sizes)|: Initializes the network. Constructs a series of \lstinline|TanhResBlock| layers based on the specified input dimension, output dimension, and sizes of hidden layers.
+  \item \lstinline|forward(self, x)|: Executes the forward pass through the network, passing the input through each layer in the sequence.
   \end{itemize}
 \end{itemize}
 
-\subsection{Class TanhNetWithNonTrainable(TanhNet)}
+\subsection{Class TanhNetWithNonTrainable(TanhResNet)}
 
 \begin{itemize}
-\item Brief description: Full-connected network designed for the 
-  \lstinline|TrainableDictionary|,
-  which contains a non-trainable outputs,
-  and a non-trainable layer.
-\item Attributes:
-  \begin{itemize}
-  \item \lstinline|__nontrainable_layer|: the non-trainable layer.
-  \end{itemize}
+\item Brief Description: 
+  An extension of the \lstinline|TanhResNet| class designed to 
+  integrate with a \lstinline|TrainableDictionary|. 
+  This network includes both trainable and non-trainable components.
 \item Methods:
   \begin{itemize}
   \item \lstinline|__init__(self, input_dim, output_dim, hidden_layer_sizes, n_nontrainable)|
-
-    \lstinline|n_nontrainable| is the number of non-trainable outputs.
-  \item \lstinline|forward(self, x)|
-  \item \lstinline|set_output_layer(self, weight)|
+    Initializes the network with specified dimensions. 
+    The parameter \lstinline|n_nontrainable| determines the number of outputs 
+    from the non-trainable layer.
+  \item \lstinline|forward(self, x)|: Computes the forward pass through the network, 
+    including the non-trainable layer.
   \end{itemize}
 \end{itemize}
 
@@ -155,63 +185,80 @@
 \subsection{Class ODE}
 
 \begin{itemize}
-\item Brief description: Abstract basis class of ordinary
-  differential equations.
+\item Brief Description: An abstract basis class for ordinary
+  differential equations (ODEs).
+  \begin{equation*}
+    \dot{x}(t) = f(x(t)).
+  \end{equation*}
 \item Attributes:
   \begin{itemize}
-  \item \lstinline|_dim|
-  \item \lstinline|_rhs|
+  \item \lstinline|_dim|: The dimension of the ODE system.
+  \item \lstinline|_rhs|: A function representing the right-hand side of the ODE.
   \end{itemize}
 \item Methods:
   \begin{itemize}
-  \item \lstinline|__init__(self, rhs, dim)|
+  \item \lstinline|__init__(self, rhs, dim)|: Initializes the ODE 
+    with the specified right-hand side function and dimension.
   \end{itemize}
 \end{itemize}
 
 \subsection{Class DuffingOscillator}
 
 \begin{itemize}
-\item Brief description: Implementation of Duffing Oscillator model.
+\item Brief Description: A concrete implementation of the Duffing Oscillator model.
+  \begin{align*}
+    &\dot{x}_1 = x_2,\\
+    &\dot{x}_2 = -\delta x_2 - x_1(\beta + \alpha x_1^2).
+  \end{align*}
 \item Methods:
   \begin{itemize}
-  \item \lstinline|__init__(self, alpha, beta, delta)|
+  \item \lstinline|__init__(self, alpha, beta, delta)|: Initializes the Duffing Oscillator
+    with parameters \lstinline|alpha|,
+    \lstinline|beta|, and \lstinline|delta|.
   \end{itemize}
 \end{itemize}
 
 \subsection{Class VanDerPolOscillator}
 
 \begin{itemize}
-\item Brief description: Implementation of Van der Pol Oscillator model.
+\item Brief Description: A concrete implementation of the Van der Pol Oscillator model.
+  \begin{align*}
+    &\dot{x}_1 = x_2,\\
+    &\dot{x}_2 = \alpha(1 - x_1^2)x_2 - x_1.
+  \end{align*}
 \item Methods:
   \begin{itemize}
-  \item \lstinline|__init__(self, alpha)|
+  \item \lstinline|__init__(self, alpha)|: Initializes the Van der Pol Oscillator with parameter \lstinline|alpha|.
   \end{itemize}
-\item 
 \end{itemize}
 
 \subsection{Class FlowMap}
 
 \begin{itemize}
-\item Brief description: Implementation of flowmap
-  $\varphi_t(x) := x(t), x(0) = x$.
-  This class acts as the basis class of numerical solvers
-  for IVP.
+\item Brief Description: Implements the flow map $\varphi_t(x) := x(t), x(0) = x$. 
+  This class serves as a base for numerical solvers for initial value problems (IVP).
 \item Attributes:
   \begin{itemize}
-  \item \lstinline|_dt|
+  \item \lstinline|_dt|: The time step size used in the numerical solver.
   \end{itemize}
 \item Methods:
   \begin{itemize}
-  \item \lstinline|step(self, ode, x_init)|
+  \item \lstinline|step(self, ode, x_init)|: Advances the solution of the ODE by one time step from the initial state \lstinline|x_init|.
   \end{itemize}
 \end{itemize}
 
 \subsection{Class ForwardEuler(FlowMap)}
 
 \begin{itemize}
-\item Brief description: Implementation of (forward) euler
-  method $U^{n+1} = U^n + kf(U^n)$,
-  where $k$ is the time step.
+\item Brief Description: A concrete implementation of the forward Euler method
+ for solving IVPs.
+ The update formula is $x(n+1) = x(n) + kf(x(n))$,
+ where $k$ is the time step.
+\item Methods:
+  \begin{itemize}
+  \item \lstinline|step(self, ode, x_init)|:
+    Overrides the base class method to implement the forward Euler update.
+  \end{itemize}
 \end{itemize}
 
 
