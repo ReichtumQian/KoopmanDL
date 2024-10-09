@@ -13,9 +13,12 @@ This is my first project written in Python and PyTorch. If you find anything tha
 We highly recommend using `Anaconda` to manage the environment. If you have it installed, you can simply run:
 
 ``` bash
+git clone https://github.com/ReichtumQian/KoopmanDL.git
+cd KoopmanDL
 # Create a new environment
 conda create -n KoopmanDL python=3.8
 conda activate KoopmanDL
+# By default using CPU
 pip install -r requirements.txt
 ```
 

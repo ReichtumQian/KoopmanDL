@@ -1,4 +1,6 @@
-pytorch 
+# If you are using a GPU, please refer to https://pytorch.org/get-started/locally/ for the specific url
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch 
 torchvision 
 torchaudio
 matplotlib
