@@ -129,6 +129,7 @@ Nonetheless, $K$ can still serve as a finite-dimensional
 approximation of $\mathcal{K}$.
 
 \subsubsection{Algorithm}
+\label{sec:EDMD-algorithm}
 
 From a data science perspective,
 given a set of data points $\{(x(n), y(n))\}_{n = 1}^N$
@@ -196,7 +197,7 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
 \end{proof}
 
 \subsubsection{Prediction}
-
+\label{sec:EDMD-prediction}
 
 \begin{proposition}
   Suppose $w_j$ is a right eigenvector of matrix $K$ with eigenvalue $\mu_j$.
@@ -205,7 +206,7 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
     \label{eq:expression-of-eigenfunction}
     \varphi_j = w_j^T \Psi
   \end{equation}
-  is an approximation of an eigenfunction of $\mathcal{K}$
+  is an eigenfunction of $\mathcal{K}$
   with the same eigenvalue $\mu_j$.
 \end{proposition}
 
@@ -263,7 +264,7 @@ where $\Psi(x) = [\psi_1(x), \psi_2(x),\cdots,\psi_M(x)]^T$.
   denote $\Xi = [\xi_1,\cdots,\xi_M]$ and $W = [w_1,\cdots,w_M]$,
   where $\xi_i, w_i$ are the left eigenvectors and right eigenvectors
   of $K$ with eigenvalue $\mu_i$, respectively.
-  Then we have
+  Then under appropriate scaling, we have
   \begin{equation}
     \label{eq:relation-between-right-and-left-eigenvector-matrix}
     \Xi^{\ast} = W^{-1}.
@@ -412,8 +413,8 @@ and $W_k \in \mathbb{R}^{\ell \times \ell}$ for $k = 1, 2$.
 With $\Psi$ parameterized, the optimization problem is formulated as:
 \begin{equation}
   \label{eq:EDMDDL-problem}
-  (K, \theta) = \argmin \limits_{(\tilde{K}, \tilde{\theta})}
-  = \sum\limits_{n = 1}^N \|\Psi(y(n); \tilde{\theta}) - \tilde{K} \Psi(x(n), \tilde{\theta})\|^2
+  (K, \theta) = \argmin \limits_{(\tilde{K}, \tilde{\theta})} J(\tilde{K}, \tilde{\theta})
+  = \sum\limits_{n = 1}^N \|\Psi(y(n); \tilde{\theta}) - \tilde{K}^T \Psi(x(n), \tilde{\theta})\|^2
   + \lambda \|\tilde{K}\|_F^2.
 \end{equation}
 We solve (\ref{eq:EDMDDL-problem}) by iterating through the following steps:
@@ -423,9 +424,10 @@ We solve (\ref{eq:EDMDDL-problem}) by iterating through the following steps:
   compute $K$ using the formula
   \begin{equation}
     \label{eq:EDMDDL-K}
-    \tilde{K}^T = A(G(\tilde{\theta}) + \lambda I)^+,
+    \tilde{K}^T = A(\tilde{\theta})(G(\tilde{\theta}) + \lambda I)^+,
   \end{equation}
-  where $G$ and $A$ are defined in (\ref{eq:EDMD-GA}).
+  where $G$ and $A$ are defined in (\ref{eq:EDMD-GA}),
+  and $I$ is the identity matrix.
 \item \textbf{Fix $K$, optimize $\theta$.}
   Optimize the trainable dictionary using gradient descent ,i.e.,
   \begin{equation}
@@ -492,4 +494,7 @@ where $\mathbf{1} \in \mathbb{R}^{N\times 1}$ is a vector with all elements
 equal to one.
 
 
+%%% Local Variables:
+%%% TeX-master: "../document"
+%%% End:
 

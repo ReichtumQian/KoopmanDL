@@ -38,7 +38,9 @@
   \begin{itemize}
   \item \lstinline|__init__(self, M, func, optimizer)|:
   Initializes the trainable dictionary.
-  The \lstinline|func| must be an instance of \lstinline|torch.nn.Module|.
+  The \lstinline|func| must be an instance of \lstinline|torch.nn.Module|,
+  \lstinline|M| is the output dimension and \lstinline|optimizer| the optimizer
+  of the neural network.
   \item \lstinline|train(self, data_loader, loss_func, n_epochs)|:
   Trains the neural network using the provided data loader, loss function,
   and number of epochs.
@@ -69,7 +71,7 @@
 
 \begin{itemize}
 \item Brief Description: This class implements the EDMD algorithm.
-  It also serves as the base class for \lstinline|EDMDDLSolver|
+  It also serves as the base class for \lstinline|EDMDDLSolver|.
 \item Attributes:
   \begin{itemize}
   \item \lstinline|_dictionary|:
@@ -89,10 +91,14 @@
     Computes the matrix $K$ using the formula $K = (AG^+)^T$,
     where $G^+$ denotes the pseudoinverse of $G$.
   \item \lstinline|compute_eig(self, K)|: Computes the eigenvalues,
-    left eigenvectors and right eigenvectors of the matrix $K$.
-  \item \lstinline|predict(self, x0, traj_len)|: 
-    Predicts the trajectory of the system starting from $x_0$
-    with length $traj\_len$.
+    left eigenvectors and right eigenvectors of the matrix $K$ and
+    store them in attributes.
+  \item \lstinline|predict(self, x0, traj_len)|:
+    Predicts the trajectory of the system starting from \lstinline|x0|
+    with length \lstinline|traj_len|. 
+    See Section \ref{sec:EDMD-prediction} for more details.
+    Note that \lstinline|predict| should be called after executing
+    \lstinline|compute_eig|.
   \item \lstinline|save(self, path)|: Saves the solver to the specified path.
   \item \lstinline|load(self, path)|: Loads the solver from the specified path.
   \end{itemize}
@@ -147,7 +153,7 @@
 \subsection{Class TanhResNet(torch.nn.Module)}
 
 \begin{itemize}
-\item Brief Description: A simple full-connected network with tanh activation,
+\item Brief Description: A simple full-connected residual network with tanh activation,
   achieved by PyTorch.
 \item Attributes:
   \begin{itemize}
@@ -236,7 +242,7 @@
 
 \begin{itemize}
 \item Brief Description: Implements the flow map $\varphi_t(x) := x(t), x(0) = x$. 
-  This class serves as a base for numerical solvers for initial value problems (IVP).
+  This class serves as a base for numerical solvers for initial value problems (IVPs).
 \item Attributes:
   \begin{itemize}
   \item \lstinline|_dt|: The time step size used in the numerical solver.
@@ -263,3 +269,6 @@
 
 
 
+%%% Local Variables:
+%%% TeX-master: "../document"
+%%% End:
